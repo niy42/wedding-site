@@ -5,14 +5,36 @@ export interface Money {
   currency: Currency;
 }
 
-export interface WeddingDetails {
+export type VenueDetails = {
+  name: string;
+  address: string;
+  mapUrl?: string;
+};
+
+export type ScheduleEvent = {
+  label: string;
+  startTimeISO: string;
+  officiatedBy?: string;
+};
+
+export type WeddingDetails = {
   partnerOneName: string;
   partnerTwoName: string;
   weddingDateISO: string;
-  ceremony: EventDetails;
-  reception: EventDetails;
   dressCode: string;
-}
+  venue: VenueDetails;
+  ceremony: ScheduleEvent;
+  reception: ScheduleEvent;
+};
+
+// export interface WeddingDetails {
+//   partnerOneName: string;
+//   partnerTwoName: string;
+//   weddingDateISO: string;
+//   ceremony: EventDetails;
+//   reception: EventDetails;
+//   dressCode: string;
+// }
 
 export interface EventDetails {
   label: string;

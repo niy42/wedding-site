@@ -9,22 +9,22 @@ export function Gallery() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   return (
-    <Section id="gallery" tone="ivory">
+    <Section id="gallery" tone="elevated">
       <Container>
         <div className="max-w-xl">
-          <span className="text-xs uppercase tracking-[0.25em] text-gold">Gallery</span>
-          <Heading level="h2" className="mt-3">
+          <span className="eyebrow">Gallery</span>
+          <Heading level="h2" className="mt-4">
             Moments so far
           </Heading>
         </div>
 
-        <div className="mt-10 columns-2 gap-3 sm:columns-3 sm:gap-4">
+        <div className="mt-12 columns-2 gap-2 sm:columns-3 sm:gap-3">
           {galleryImages.map((image, index) => (
             <button
               key={image.id}
               type="button"
               onClick={() => setActiveIndex(index)}
-              className="mb-3 block w-full break-inside-avoid overflow-hidden rounded-[var(--radius-md)] sm:mb-4"
+              className="group relative mb-2 block w-full break-inside-avoid overflow-hidden sm:mb-3"
               aria-label={`Open photo ${index + 1} in full view`}
             >
               <img
@@ -33,8 +33,9 @@ export function Gallery() {
                 loading="lazy"
                 width={image.width}
                 height={image.height}
-                className="w-full object-cover transition-transform duration-500 ease-[var(--ease-editorial)] hover:scale-[1.03]"
+                className="w-full object-cover opacity-90 grayscale-[15%] transition-all duration-700 ease-[var(--ease-editorial)] group-hover:scale-[1.04] group-hover:opacity-100 group-hover:grayscale-0"
               />
+              <div className="pointer-events-none absolute inset-0 bg-bg/10 transition-opacity duration-500 group-hover:opacity-0" />
             </button>
           ))}
         </div>

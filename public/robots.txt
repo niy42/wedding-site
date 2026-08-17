@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-Sitemap: https://niyi-and-amara.wedding/sitemap.xml
+Sitemap: https://jossyandrew2026.wedding/sitemap.xml

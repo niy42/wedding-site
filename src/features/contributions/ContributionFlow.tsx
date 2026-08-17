@@ -96,7 +96,7 @@ export function ContributionFlow({ category, onClose }: ContributionFlowProps) {
     <Dialog open={open} onClose={handleClose} title={category ? category.title : "Send a gift"}>
       {step === "amount" && (
         <div className="flex flex-col gap-5">
-          <p className="text-sm text-charcoal/70">
+          <p className="text-[0.95rem] leading-relaxed text-fg">
             Choose an amount, or enter your own — every gift is appreciated, whatever the size.
           </p>
           <div className="grid grid-cols-2 gap-3">
@@ -109,10 +109,10 @@ export function ContributionFlow({ category, onClose }: ContributionFlowProps) {
                   setCustomAmount("");
                 }}
                 className={cn(
-                  "rounded-[var(--radius-sm)] border px-4 py-3 text-sm font-medium transition-colors",
+                  "border px-4 py-3 text-sm font-medium tracking-wide transition-colors",
                   amountMajor === value
-                    ? "border-clay bg-clay/5 text-clay"
-                    : "border-ink/20 hover:border-ink/40"
+                    ? "border-accent bg-accent/10 text-accent-soft"
+                    : "border-border text-fg hover:border-fg/40"
                 )}
               >
                 {formatMoney({ amountMinor: toMinorUnits(value), currency })}
@@ -142,9 +142,12 @@ export function ContributionFlow({ category, onClose }: ContributionFlowProps) {
 
       {step === "supporter" && (
         <div className="flex flex-col gap-5">
-          <p className="text-sm text-charcoal/70">
-            Giving <strong>{formatMoney({ amountMinor: toMinorUnits(finalAmount), currency })}</strong>{" "}
-            toward {category?.title}.
+          <p className="text-[0.95rem] leading-relaxed text-fg">
+            Giving{" "}
+            <span className="font-display text-lg italic text-accent-soft">
+              {formatMoney({ amountMinor: toMinorUnits(finalAmount), currency })}
+            </span>{" "}
+            toward <span className="font-medium text-fg">{category?.title}</span>.
           </p>
           <Input
             label="Your name"
@@ -173,7 +176,7 @@ export function ContributionFlow({ category, onClose }: ContributionFlowProps) {
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
-              className="accent-clay"
+              className="accent-[var(--color-accent)]"
               checked={supporter.isAnonymous}
               onChange={(e) =>
                 setSupporter((s) => ({ ...s, isAnonymous: e.target.checked }))
@@ -199,7 +202,7 @@ export function ContributionFlow({ category, onClose }: ContributionFlowProps) {
 
       {step === "error" && (
         <div className="flex flex-col gap-5">
-          <p role="alert" className="text-sm text-clay">
+          <p role="alert" className="text-sm text-rose">
             {errorMessage}
           </p>
           <Button onClick={() => setStep("supporter")}>Try again</Button>

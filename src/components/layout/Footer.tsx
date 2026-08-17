@@ -1,5 +1,5 @@
 import { Container } from "@/components/ui/Container";
-import { weddingDetails } from "@/lib/wedding-content";
+import { THEME_ID, weddingDetails } from "@/lib/wedding-content";
 
 export function Footer() {
   const date = new Date(weddingDetails.weddingDateISO);
@@ -10,13 +10,16 @@ export function Footer() {
   });
 
   return (
-    <footer className="bg-ink py-14 text-ivory">
-      <Container className="flex flex-col items-center gap-3 text-center">
-        <p className="font-display text-2xl italic">
-          {weddingDetails.partnerOneName} &amp; {weddingDetails.partnerTwoName}
+    <footer className="bg-bg py-24 text-center text-fg">
+      <Container className="flex flex-col items-center gap-4">
+        <p className="font-display text-4xl italic sm:text-5xl">
+          {weddingDetails.partnerOneName}
+          <span className="text-accent-soft"> &amp; </span>
+          {weddingDetails.partnerTwoName}
         </p>
-        <p className="text-sm text-ivory/70">{formatted}</p>
-        <p className="mt-6 text-xs text-ivory/40">
+        <span className="eyebrow">{THEME_ID}</span>
+        <p className="mt-2 text-sm text-fg-muted">{formatted}</p>
+        <p className="mt-10 text-xs text-fg-faint">
           With love and gratitude to everyone joining our journey.
         </p>
       </Container>
