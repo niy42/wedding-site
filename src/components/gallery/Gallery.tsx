@@ -18,13 +18,13 @@ export function Gallery() {
           </Heading>
         </div>
 
-        <div className="mt-12 columns-2 gap-2 sm:columns-3 sm:gap-3">
+        <div className="gap-2 sm:gap-3 columns-2 sm:columns-3 mt-12">
           {galleryImages.map((image, index) => (
             <button
               key={image.id}
               type="button"
               onClick={() => setActiveIndex(index)}
-              className="group relative mb-2 block w-full break-inside-avoid overflow-hidden sm:mb-3"
+              className="group block relative mb-2 sm:mb-3 w-full overflow-hidden break-inside-avoid"
               aria-label={`Open photo ${index + 1} in full view`}
             >
               <img
@@ -33,9 +33,9 @@ export function Gallery() {
                 loading="lazy"
                 width={image.width}
                 height={image.height}
-                className="w-full object-cover opacity-90 grayscale-[15%] transition-all duration-700 ease-[var(--ease-editorial)] group-hover:scale-[1.04] group-hover:opacity-100 group-hover:grayscale-0"
+                className="opacity-90 group-hover:opacity-100 group-hover:grayscale-0 w-full object-cover group-hover:scale-[1.04] transition-all duration-700 ease-editorial grayscale15"
               />
-              <div className="pointer-events-none absolute inset-0 bg-bg/10 transition-opacity duration-500 group-hover:opacity-0" />
+              <div className="absolute inset-0 bg-bg/10 group-hover:opacity-0 transition-opacity duration-500 pointer-events-none" />
             </button>
           ))}
         </div>

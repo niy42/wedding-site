@@ -1,4 +1,6 @@
+import { ChurchEnvCat, ChurchEnvNoColor, Golden, GoldenHub, HomeKeffi, IntroHome, IntroHomeMinna, Proposal, ProposalHands, ProposalHandsLove, ProposalTwo } from "@/assets";
 import type { GalleryImage, GiftCategory, StoryMilestone, WeddingDetails } from "@/types";
+
 
 /**
  * Theme identity: JossyAndrew2026 — Josephine & Andrew.
@@ -38,31 +40,91 @@ export const storyMilestones: StoryMilestone[] = [
     year: "2021",
     title: "A chance introduction",
     body: "We met through mutual friends on a rainy Lagos evening that neither of us expected to remember — and haven't stopped talking since.",
-    imageUrl: "https://picsum.photos/seed/jossyandrew-story-1/900/1150",
+    imageUrl: ProposalTwo,
   },
   {
     id: "distance",
     year: "2023",
     title: "Miles apart, closer than ever",
     body: "A season across two continents taught us what we already suspected: this was worth building a life around.",
-    imageUrl: "https://picsum.photos/seed/jossyandrew-story-2/900/1150",
+    imageUrl: ProposalHands,
   },
   {
     id: "proposal",
     year: "2025",
     title: "The question",
     body: "On the same street where we first met, under the same kind of rain, we said yes to forever.",
-    imageUrl: "https://picsum.photos/seed/jossyandrew-story-3/900/1150",
+    imageUrl: ProposalHandsLove,
   },
 ];
 
-export const galleryImages: GalleryImage[] = Array.from({ length: 8 }).map((_, i) => ({
-  id: `gallery-${i + 1}`,
-  src: `https://picsum.photos/seed/jossyandrew-gallery-${i + 1}/1200/1500`,
-  alt: `Photo ${i + 1} of Josephine and Andrew`,
-  width: 1200,
-  height: 1500,
-}));
+// export const galleryImages: GalleryImage[] = Array.from({ length: 8 }).map((_, i) => ({
+//   id: `gallery-${i + 1}`,
+//   src: `https://picsum.photos/seed/jossyandrew-gallery-${i + 1}/1200/1500`,
+//   alt: `Photo ${i + 1} of Josephine and Andrew`,
+//   width: 1200,
+//   height: 1500,
+// }));
+
+
+export const galleryImages: GalleryImage[] = [
+  {
+    id: "gallery-1",
+    src: IntroHome,
+    alt: "Photo 1 of Josephine and Andrew",
+    width: 1200,
+    height: 1500,
+  },
+  {
+    id: "gallery-2",
+    src: ChurchEnvNoColor,
+    alt: "Photo 2 of Josephine and Andrew",
+    width: 1200,
+    height: 1500,
+  },
+  {
+    id: "gallery-3",
+    src: Golden,
+    alt: "Photo 3 of Josephine and Andrew",
+    width: 1200,
+    height: 1500,
+  },
+  {
+    id: "gallery-4",
+    src: Proposal,
+    alt: "Photo 4 of Josephine and Andrew",
+    width: 1200,
+    height: 1500,
+  },
+  // {
+  //   id: "gallery-5",
+  //   src: IntroHome,
+  //   alt: "Photo 5 of Josephine and Andrew",
+  //   width: 1200,
+  //   height: 1500,
+  // },
+  // {
+  //   id: "gallery-6",
+  //   src: Proposal,
+  //   alt: "Photo 6 of Josephine and Andrew",
+  //   width: 1200,
+  //   height: 1500,
+  // },
+  // {
+  //   id: "gallery-7",
+  //   src: "https://picsum.photos/seed/jossyandrew-gallery-7/1200/1500",
+  //   alt: "Photo 7 of Josephine and Andrew",
+  //   width: 1200,
+  //   height: 1500,
+  // },
+  // {
+  //   id: "gallery-8",
+  //   src: "https://picsum.photos/seed/jossyandrew-gallery-8/1200/1500",
+  //   alt: "Photo 8 of Josephine and Andrew",
+  //   width: 1200,
+  //   height: 1500,
+  // },
+];
 
 export const giftCategories: GiftCategory[] = [
   {
