@@ -30,3 +30,14 @@ If you are developing a production application, we recommend enabling type-aware
 ```
 
 See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+
+## Paystack payments
+
+The contribution flow uses server-side Paystack transaction initialization and webhook verification. The browser never receives the Paystack secret key.
+
+1. Create the Supabase tables/functions from `server/db/schema.sql`.
+2. Copy `.env.example` to `.env` and fill in the server values.
+3. Use a Paystack **test** secret key while developing.
+4. Run the frontend with `npm run dev` and the API with `npm run server`.
+5. Configure Paystack's webhook URL as `https://<your-api-host>/api/payments/webhook`.
+6. Switch to the live secret key only after testing the complete payment lifecycle.

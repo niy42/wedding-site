@@ -35,7 +35,7 @@ export function ThankYouPage() {
   }, [reference]);
 
   return (
-    <div className="flex min-h-screen items-center bg-bg text-fg">
+    <div className="flex items-center bg-bg min-h-screen text-fg">
       <Container className="text-center">
         {state.status === "verifying" && (
           <p className="text-fg-muted">Confirming your gift…</p>
@@ -47,7 +47,7 @@ export function ThankYouPage() {
               Thank you ❤️
             </Heading>
             <p className="mx-auto mt-5 max-w-md text-fg-muted">
-              Your kindness means more to us than you know. Thank you for being part of our
+              Your kindness means more to us. Thank you for being part of our
               journey.
             </p>
           </>
@@ -75,7 +75,7 @@ export function ThankYouPage() {
                 ? "It looks like the payment didn't go through. No amount has been charged."
                 : "We couldn't reach our server to confirm this. If you were charged, please contact us and we'll sort it out."}
             </p>
-            <a href="/#gift" className="mt-6 inline-block text-sm text-accent-soft hover:underline">
+            <a href="/#gift" className="inline-block mt-6 text-sm hover:underline text-accent-soft">
               Return to the gift page →
             </a>
           </>
