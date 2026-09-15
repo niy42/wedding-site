@@ -1,3 +1,4 @@
+import heroImage from "@/assets/hero.png";
 import ChurchEnvNoColor from "@/assets/images/church-env-no-color.jpg";
 import ChurchEnv from "@/assets/images/church-env.jpg";
 import ChurchEnvCat from "@/assets/images/church-env-cat.jpg";
@@ -12,4 +13,4 @@ import ProposalHands from "@/assets/images/proposal-hands.jpg";
 import ProposalHandsLove from "@/assets/images/proposal-hands-love.jpg";
 import ProposalFlowers from "@/assets/images/proposal-flowers.jpg";
 
-export { ChurchEnvNoColor, ChurchEnv, ChurchEnvCat, Golden, GoldenHub, IntroHomeMinna, IntroHome, HomeKeffi, Proposal, ProposalTwo, ProposalHands, ProposalHandsLove, ProposalFlowers }
+export { heroImage, ChurchEnvNoColor, ChurchEnv, ChurchEnvCat, Golden, GoldenHub, IntroHomeMinna, IntroHome, HomeKeffi, Proposal, ProposalTwo, ProposalHands, ProposalHandsLove, ProposalFlowers }

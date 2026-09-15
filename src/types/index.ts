@@ -107,3 +107,44 @@ export interface PaymentInitializationResponse {
   checkoutUrl?: string;
   provider: string;
 }
+
+
+export interface AdminContribution {
+  id: string;
+  reference: string;
+  categoryId: string;
+  categoryTitle: string;
+  amount: Money;
+  supporterName: string;
+  supporterEmail: string;
+  supporterPhone?: string;
+  supporterMessage?: string;
+  isAnonymous: boolean;
+  isPublic: boolean;
+  paymentStatus: string;
+  paidAt?: string;
+  createdAt: string;
+}
+
+export interface AdminRSVP {
+  id: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  attending: "yes" | "no";
+  guestCount: number;
+  guestNames?: string[];
+  dietaryNotes?: string;
+  note?: string;
+  createdAt: string;
+}
+
+export interface AdminDashboard {
+  totals: Money;
+  contributorCount: number;
+  rsvpCount: number;
+  attendingGuestCount: number;
+  categories: GiftCategory[];
+  contributions: AdminContribution[];
+  rsvps: AdminRSVP[];
+}

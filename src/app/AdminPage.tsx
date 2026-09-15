@@ -1,51 +1,102 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
-import { formatMoney, addMoney } from "@/lib/currency";
-import { giftCategories, weddingDetails } from "@/lib/wedding-content";
+import { Button } from "@/components/ui/Button";
+import { formatMoney } from "@/lib/currency";
+import { api, ApiError } from "@/services/api-client";
+import type { AdminDashboard } from "@/types";
 
-/**
- * UI scaffold for the admin area described in the brief (overview,
- * contributions, RSVP, content management). This screen currently
- * renders against local mock data and has NO real authentication —
- * it must sit behind server-verified admin sessions (see the
- * deliverable report) before this route is exposed in production.
- */
 export function AdminPage() {
-  const [unlocked, setUnlocked] = useState(false);
+  const [dashboard, setDashboard] = useState<AdminDashboard | null>(null);
   const [passcode, setPasscode] = useState("");
+  const [authenticated, setAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loggingIn, setLoggingIn] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const totals = useMemo(() => {
-    const currency = giftCategories[0]?.raised.currency ?? "NGN";
-    const total = giftCategories.reduce(
-      (sum, c) => addMoney(sum, c.raised),
-      { amountMinor: 0, currency }
-    );
-    return total;
+  async function loadDashboard() {
+    try {
+      const data = await api.getAdminDashboard();
+      setDashboard(data);
+      setAuthenticated(true);
+      setError(null);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        setAuthenticated(false);
+        return;
+      }
+      setError("We couldn't load the admin dashboard. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadDashboard();
   }, []);
 
-  if (!unlocked) {
+  async function handleLogin(event: FormEvent) {
+    event.preventDefault();
+    if (!passcode) return;
+
+    setLoggingIn(true);
+    setError(null);
+    try {
+      await api.adminLogin(passcode);
+      setPasscode("");
+      await loadDashboard();
+    } catch (err) {
+      setError(
+        err instanceof ApiError && err.status === 401
+          ? "The admin passcode is incorrect."
+          : "We couldn't sign you in. Please try again.",
+      );
+    } finally {
+      setLoggingIn(false);
+    }
+  }
+
+  async function handleLogout() {
+    await api.adminLogout().catch(() => undefined);
+    setAuthenticated(false);
+    setDashboard(null);
+  }
+
+  if (loading) {
     return (
-      <div className="flex justify-center items-center bg-bg min-h-screen">
+      <div className="bg-bg min-h-screen">
+        <Container className="py-20">
+          <p className="text-sm text-fg-muted" role="status">Loading admin dashboard…</p>
+        </Container>
+      </div>
+    );
+  }
+
+  if (!authenticated || !dashboard) {
+    return (
+      <div className="flex justify-center items-center bg-bg min-h-screen px-4">
         <Card className="bg-bg-elevated w-[min(360px,90vw)] text-center">
           <h1 className="font-display text-2xl">Admin</h1>
           <p className="mt-2 text-fg-muted text-sm">
-            Placeholder gate — replace with real backend authentication.
+            Sign in with your admin credentials to continue.
           </p>
-          <input
-            type="password"
-            value={passcode}
-            onChange={(e) => setPasscode(e.target.value)}
-            placeholder="Passcode"
-            className="mt-4 px-4 py-2.5 border border-border rounded-sm w-full text-sm"
-          />
-          <button
-            type="button"
-            onClick={() => setUnlocked(passcode.length > 0)}
-            className="bg-accent mt-3 px-4 py-2.5 rounded-sm w-full text-bg text-sm"
-          >
-            Enter
-          </button>
+          <form onSubmit={handleLogin}>
+            <label htmlFor="admin-passcode" className="sr-only">Admin passcode</label>
+            <input
+              id="admin-passcode"
+              type="password"
+              value={passcode}
+              onChange={(e) => setPasscode(e.target.value)}
+              placeholder="Admin passcode"
+              autoComplete="current-password"
+              className="mt-4 px-4 py-2.5 border border-border rounded-sm w-full text-sm"
+            />
+            {error && <p className="mt-3 text-rose text-sm" role="alert">{error}</p>}
+            <Button type="submit" className="mt-3 w-full" disabled={loggingIn || !passcode}>
+              {loggingIn ? "Signing in…" : "Sign in"}
+            </Button>
+          </form>
         </Card>
       </div>
     );
@@ -54,30 +105,35 @@ export function AdminPage() {
   return (
     <div className="bg-bg min-h-screen">
       <Container className="py-10">
-        <h1 className="font-display text-3xl">
-          {weddingDetails.partnerOneName} &amp; {weddingDetails.partnerTwoName} — Admin
-        </h1>
+        <div className="flex justify-between items-start gap-4">
+          <div>
+            <h1 className="font-display text-3xl">Admin</h1>
+            <p className="mt-2 text-fg-muted text-sm">Live wedding and contribution data.</p>
+          </div>
+          <Button type="button" variant="secondary" onClick={handleLogout}>Sign out</Button>
+        </div>
+
+        {error && <p className="mt-6 text-rose text-sm" role="alert">{error}</p>}
 
         <div className="gap-4 grid sm:grid-cols-3 mt-8">
           <Card>
             <p className="text-fg-muted text-xs uppercase tracking-wide">Total raised</p>
-            <p className="mt-2 font-display text-3xl">{formatMoney(totals)}</p>
+            <p className="mt-2 font-display text-3xl">{formatMoney(dashboard.totals)}</p>
           </Card>
           <Card>
             <p className="text-fg-muted text-xs uppercase tracking-wide">Contributors</p>
-            <p className="mt-2 font-display text-3xl">—</p>
-            <p className="mt-1 text-fg-muted text-xs">Wire to /api/admin/contributions</p>
+            <p className="mt-2 font-display text-3xl">{dashboard.contributorCount}</p>
           </Card>
           <Card>
             <p className="text-fg-muted text-xs uppercase tracking-wide">RSVPs</p>
-            <p className="mt-2 font-display text-3xl">—</p>
-            <p className="mt-1 text-fg-muted text-xs">Wire to /api/admin/rsvps</p>
+            <p className="mt-2 font-display text-3xl">{dashboard.rsvpCount}</p>
+            <p className="mt-1 text-fg-muted text-xs">{dashboard.attendingGuestCount} guests attending</p>
           </Card>
         </div>
 
-        <Card className="mt-6">
+        <Card className="mt-6 overflow-x-auto">
           <h2 className="font-display text-xl">Gift categories</h2>
-          <table className="mt-4 w-full text-sm text-left">
+          <table className="mt-4 w-full min-w-[620px] text-sm text-left">
             <thead>
               <tr className="border-border border-b text-fg-muted text-xs uppercase tracking-wide">
                 <th className="py-2">Category</th>
@@ -86,22 +142,76 @@ export function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {giftCategories.map((c) => (
-                <tr key={c.id} className="border-border-subtle border-b">
-                  <td className="py-2.5">{c.title}</td>
-                  <td className="py-2.5">{formatMoney(c.raised)}</td>
-                  <td className="py-2.5">{c.target ? formatMoney(c.target) : "No target"}</td>
+              {dashboard.categories.map((category) => (
+                <tr key={category.id} className="border-border-subtle border-b">
+                  <td className="py-2.5">{category.title}</td>
+                  <td className="py-2.5">{formatMoney(category.raised)}</td>
+                  <td className="py-2.5">{category.target ? formatMoney(category.target) : "No target"}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </Card>
 
-        <p className="mt-6 text-fg-muted text-xs">
-          Contributions, RSVP, and content-management tables are scaffolded UI only — connect
-          each to the corresponding backend endpoint once it exists (see the deliverable report
-          for the full endpoint list).
-        </p>
+        <Card className="mt-6 overflow-x-auto">
+          <h2 className="font-display text-xl">Contributions</h2>
+          <table className="mt-4 w-full min-w-[900px] text-sm text-left">
+            <thead>
+              <tr className="border-border border-b text-fg-muted text-xs uppercase tracking-wide">
+                <th className="py-2">Date</th>
+                <th className="py-2">Supporter</th>
+                <th className="py-2">Category</th>
+                <th className="py-2">Amount</th>
+                <th className="py-2">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dashboard.contributions.map((contribution) => (
+                <tr key={contribution.id} className="border-border-subtle border-b">
+                  <td className="py-2.5">{new Date(contribution.createdAt).toLocaleDateString("en-GB")}</td>
+                  <td className="py-2.5">
+                    {contribution.isAnonymous ? "Anonymous" : contribution.supporterName}
+                  </td>
+                  <td className="py-2.5">{contribution.categoryTitle}</td>
+                  <td className="py-2.5">{formatMoney(contribution.amount)}</td>
+                  <td className="py-2.5">{contribution.paymentStatus}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {dashboard.contributions.length === 0 && (
+            <p className="py-6 text-sm text-fg-muted">No contributions yet.</p>
+          )}
+        </Card>
+
+        <Card className="mt-6 overflow-x-auto">
+          <h2 className="font-display text-xl">RSVPs</h2>
+          <table className="mt-4 w-full min-w-[900px] text-sm text-left">
+            <thead>
+              <tr className="border-border border-b text-fg-muted text-xs uppercase tracking-wide">
+                <th className="py-2">Name</th>
+                <th className="py-2">Attendance</th>
+                <th className="py-2">Guests</th>
+                <th className="py-2">Email</th>
+                <th className="py-2">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dashboard.rsvps.map((rsvp) => (
+                <tr key={rsvp.id} className="border-border-subtle border-b">
+                  <td className="py-2.5">{rsvp.fullName}</td>
+                  <td className="py-2.5">{rsvp.attending === "yes" ? "Attending" : "Declined"}</td>
+                  <td className="py-2.5">{rsvp.attending === "yes" ? rsvp.guestCount : 0}</td>
+                  <td className="py-2.5">{rsvp.email}</td>
+                  <td className="py-2.5">{new Date(rsvp.createdAt).toLocaleDateString("en-GB")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {dashboard.rsvps.length === 0 && (
+            <p className="py-6 text-sm text-fg-muted">No RSVPs yet.</p>
+          )}
+        </Card>
       </Container>
     </div>
   );

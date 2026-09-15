@@ -1,4 +1,5 @@
 import { Container } from "@/components/ui/Container";
+import { heroImage } from "@/assets";
 import { Countdown } from "./Countdown";
 import { THEME_ID, weddingDetails } from "@/lib/wedding-content";
 
@@ -14,7 +15,7 @@ export function Hero() {
   return (
     <section id="top" className="relative min-h-100svh overflow-hidden bg-bg text-fg">
       <img
-        src="https://picsum.photos/seed/jossyandrew-hero/1800/2400"
+        src={heroImage}
         alt=""
         aria-hidden
         className="absolute inset-0 h-full w-full object-cover opacity-[0.38] animate-[hero-reveal_1.6s_var(--ease-editorial)_forwards]"

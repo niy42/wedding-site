@@ -14,6 +14,8 @@ import {
 
 import { assertBodySize } from "./lib/validation.js";
 import { RateLimiter } from "./lib/rate-limit.js";
+import { getGiftCategories, createRSVP } from "./routes/content.routes.js";
+import { adminLogin, adminLogout, getAdminDashboard } from "./routes/admin.routes.js";
 
 const port = Number(process.env.PORT ?? 4000);
 
@@ -26,6 +28,7 @@ const allowedOrigins = new Set(
 
 const limiters = {
   contribution: new RateLimiter(10, 60_000),
+  rsvp: new RateLimiter(10, 60_000),
   initialize: new RateLimiter(10, 60_000),
   verify: new RateLimiter(30, 60_000),
 };
@@ -66,6 +69,7 @@ function cors(
     "Access-Control-Allow-Methods",
     "GET,POST,OPTIONS",
   );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
 }
 
 function clientKey(req: IncomingMessage): string {
@@ -124,6 +128,60 @@ const server = createServer(async (req, res) => {
       return json(res, 200, {
         status: "ok",
       });
+    }
+
+    if (
+      req.method === "GET" &&
+      url.pathname === "/api/gift-categories"
+    ) {
+      return json(res, 200, await getGiftCategories());
+    }
+
+    if (
+      req.method === "POST" &&
+      url.pathname === "/api/rsvp"
+    ) {
+      if (!limiters.rsvp.allow(key)) {
+        return json(res, 429, { message: "Too many requests" });
+      }
+
+      const raw = await readBody(req);
+      let body: unknown;
+      try {
+        body = JSON.parse(raw);
+      } catch {
+        throw new HttpError(400, "Invalid JSON payload");
+      }
+
+      return json(res, 201, await createRSVP(body));
+    }
+
+    if (
+      req.method === "POST" &&
+      url.pathname === "/api/admin/login"
+    ) {
+      const raw = await readBody(req);
+      let body: unknown;
+      try {
+        body = JSON.parse(raw);
+      } catch {
+        throw new HttpError(400, "Invalid JSON payload");
+      }
+      return json(res, 200, await adminLogin(res, body));
+    }
+
+    if (
+      req.method === "POST" &&
+      url.pathname === "/api/admin/logout"
+    ) {
+      return json(res, 200, adminLogout(res));
+    }
+
+    if (
+      req.method === "GET" &&
+      url.pathname === "/api/admin/dashboard"
+    ) {
+      return json(res, 200, await getAdminDashboard(req));
     }
 
     if (

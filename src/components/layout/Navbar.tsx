@@ -55,7 +55,13 @@ export function Navbar() {
             ))}
           </nav>
 
-          <div className="hidden md:block">
+          <div className="hidden items-center gap-6 md:flex">
+            <a
+              href="/admin"
+              className="text-xs uppercase tracking-[0.18em] text-fg-muted transition-colors hover:text-accent-soft"
+            >
+              Admin
+            </a>
             <a
               href="#gift"
               className="inline-flex items-center border border-accent/50 px-6 py-2.5 text-xs uppercase tracking-[0.18em] text-accent-soft transition-colors hover:bg-accent hover:text-bg"
@@ -107,6 +113,13 @@ export function Navbar() {
             {link.label}
           </a>
         ))}
+        <a
+          href="/admin"
+          onClick={() => setOpen(false)}
+          className="font-display text-3xl italic text-fg"
+        >
+          Admin
+        </a>
         <a
           href="#gift"
           onClick={() => setOpen(false)}
