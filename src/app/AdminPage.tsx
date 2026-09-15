@@ -26,10 +26,10 @@ export function AdminPage() {
 
   if (!unlocked) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-bg">
-        <Card className="w-[min(360px,90vw)] bg-bg-elevated text-center">
+      <div className="flex justify-center items-center bg-bg min-h-screen">
+        <Card className="bg-bg-elevated w-[min(360px,90vw)] text-center">
           <h1 className="font-display text-2xl">Admin</h1>
-          <p className="mt-2 text-sm text-fg-muted">
+          <p className="mt-2 text-fg-muted text-sm">
             Placeholder gate — replace with real backend authentication.
           </p>
           <input
@@ -37,12 +37,12 @@ export function AdminPage() {
             value={passcode}
             onChange={(e) => setPasscode(e.target.value)}
             placeholder="Passcode"
-            className="mt-4 w-full rounded-[var(--radius-sm)] border border-border px-4 py-2.5 text-sm"
+            className="mt-4 px-4 py-2.5 border border-border rounded-sm w-full text-sm"
           />
           <button
             type="button"
             onClick={() => setUnlocked(passcode.length > 0)}
-            className="mt-3 w-full rounded-[var(--radius-sm)] bg-accent px-4 py-2.5 text-sm text-bg"
+            className="bg-accent mt-3 px-4 py-2.5 rounded-sm w-full text-bg text-sm"
           >
             Enter
           </button>
@@ -52,34 +52,34 @@ export function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="bg-bg min-h-screen">
       <Container className="py-10">
         <h1 className="font-display text-3xl">
           {weddingDetails.partnerOneName} &amp; {weddingDetails.partnerTwoName} — Admin
         </h1>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+        <div className="gap-4 grid sm:grid-cols-3 mt-8">
           <Card>
-            <p className="text-xs uppercase tracking-wide text-fg-muted">Total raised</p>
+            <p className="text-fg-muted text-xs uppercase tracking-wide">Total raised</p>
             <p className="mt-2 font-display text-3xl">{formatMoney(totals)}</p>
           </Card>
           <Card>
-            <p className="text-xs uppercase tracking-wide text-fg-muted">Contributors</p>
+            <p className="text-fg-muted text-xs uppercase tracking-wide">Contributors</p>
             <p className="mt-2 font-display text-3xl">—</p>
-            <p className="mt-1 text-xs text-fg-muted">Wire to /api/admin/contributions</p>
+            <p className="mt-1 text-fg-muted text-xs">Wire to /api/admin/contributions</p>
           </Card>
           <Card>
-            <p className="text-xs uppercase tracking-wide text-fg-muted">RSVPs</p>
+            <p className="text-fg-muted text-xs uppercase tracking-wide">RSVPs</p>
             <p className="mt-2 font-display text-3xl">—</p>
-            <p className="mt-1 text-xs text-fg-muted">Wire to /api/admin/rsvps</p>
+            <p className="mt-1 text-fg-muted text-xs">Wire to /api/admin/rsvps</p>
           </Card>
         </div>
 
         <Card className="mt-6">
           <h2 className="font-display text-xl">Gift categories</h2>
-          <table className="mt-4 w-full text-left text-sm">
+          <table className="mt-4 w-full text-sm text-left">
             <thead>
-              <tr className="border-b border-border text-xs uppercase tracking-wide text-fg-muted">
+              <tr className="border-border border-b text-fg-muted text-xs uppercase tracking-wide">
                 <th className="py-2">Category</th>
                 <th className="py-2">Raised</th>
                 <th className="py-2">Target</th>
@@ -87,7 +87,7 @@ export function AdminPage() {
             </thead>
             <tbody>
               {giftCategories.map((c) => (
-                <tr key={c.id} className="border-b border-border-subtle">
+                <tr key={c.id} className="border-border-subtle border-b">
                   <td className="py-2.5">{c.title}</td>
                   <td className="py-2.5">{formatMoney(c.raised)}</td>
                   <td className="py-2.5">{c.target ? formatMoney(c.target) : "No target"}</td>
@@ -97,7 +97,7 @@ export function AdminPage() {
           </table>
         </Card>
 
-        <p className="mt-6 text-xs text-fg-muted">
+        <p className="mt-6 text-fg-muted text-xs">
           Contributions, RSVP, and content-management tables are scaffolded UI only — connect
           each to the corresponding backend endpoint once it exists (see the deliverable report
           for the full endpoint list).
