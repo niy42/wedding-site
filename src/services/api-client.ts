@@ -61,7 +61,7 @@ export const api = {
     }),
 
   verifyPayment: (reference: string) =>
-    request<{ reference: string; status: string; amountMinor: number; currency: string }>(`/payments/${encodeURIComponent(reference)}`),
+    request<{ reference: string; status: string; amountMinor: number; currency: string; supporterName?: string }>(`/payments/${encodeURIComponent(reference)}`),
 
   getGiftCategories: () => request<GiftCategory[]>("/gift-categories"),
 

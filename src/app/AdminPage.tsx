@@ -67,7 +67,7 @@ export function AdminPage() {
     return (
       <div className="bg-bg min-h-screen">
         <Container className="py-20">
-          <p className="text-sm text-fg-muted" role="status">Loading admin dashboard…</p>
+          <p className="text-fg-muted text-sm" role="status">Loading admin dashboard…</p>
         </Container>
       </div>
     );
@@ -75,7 +75,7 @@ export function AdminPage() {
 
   if (!authenticated || !dashboard) {
     return (
-      <div className="flex justify-center items-center bg-bg min-h-screen px-4">
+      <div className="flex justify-center items-center bg-bg px-4 min-h-screen">
         <Card className="bg-bg-elevated w-[min(360px,90vw)] text-center">
           <h1 className="font-display text-2xl">Admin</h1>
           <p className="mt-2 text-fg-muted text-sm">
@@ -133,7 +133,7 @@ export function AdminPage() {
 
         <Card className="mt-6 overflow-x-auto">
           <h2 className="font-display text-xl">Gift categories</h2>
-          <table className="mt-4 w-full min-w-[620px] text-sm text-left">
+          <table className="mt-4 w-full min-w-155 text-sm text-left">
             <thead>
               <tr className="border-border border-b text-fg-muted text-xs uppercase tracking-wide">
                 <th className="py-2">Category</th>
@@ -155,38 +155,55 @@ export function AdminPage() {
 
         <Card className="mt-6 overflow-x-auto">
           <h2 className="font-display text-xl">Contributions</h2>
-          <table className="mt-4 w-full min-w-[900px] text-sm text-left">
+          <table className="mt-4 w-full min-w-375 text-sm text-left">
             <thead>
               <tr className="border-border border-b text-fg-muted text-xs uppercase tracking-wide">
-                <th className="py-2">Date</th>
-                <th className="py-2">Supporter</th>
-                <th className="py-2">Category</th>
-                <th className="py-2">Amount</th>
+                <th className="py-2 pr-4">Date</th>
+                <th className="py-2 pr-4">Supporter</th>
+                <th className="py-2 pr-4">Email</th>
+                <th className="py-2 pr-4">Phone</th>
+                <th className="py-2 pr-4">Message</th>
+                <th className="py-2 pr-4">Category</th>
+                <th className="py-2 pr-4">Amount</th>
+                <th className="py-2 pr-4">Currency</th>
+                <th className="py-2 pr-4">Provider</th>
+                <th className="py-2 pr-4">Reference</th>
+                <th className="py-2 pr-4">Provider ref.</th>
                 <th className="py-2">Status</th>
               </tr>
             </thead>
             <tbody>
               {dashboard.contributions.map((contribution) => (
-                <tr key={contribution.id} className="border-border-subtle border-b">
-                  <td className="py-2.5">{new Date(contribution.createdAt).toLocaleDateString("en-GB")}</td>
-                  <td className="py-2.5">
-                    {contribution.isAnonymous ? "Anonymous" : contribution.supporterName}
+                <tr key={contribution.id} className="border-border-subtle border-b align-top">
+                  <td className="py-2.5 pr-4 whitespace-nowrap">{new Date(contribution.createdAt).toLocaleDateString("en-GB")}</td>
+                  <td className="py-2.5 pr-4">
+                    <div>{contribution.isAnonymous ? "Anonymous" : contribution.supporterName}</div>
+                    <div className="mt-1 text-fg-muted text-xs">
+                      {contribution.isPublic ? "Public" : "Private"}
+                    </div>
                   </td>
-                  <td className="py-2.5">{contribution.categoryTitle}</td>
-                  <td className="py-2.5">{formatMoney(contribution.amount)}</td>
-                  <td className="py-2.5">{contribution.paymentStatus}</td>
+                  <td className="py-2.5 pr-4">{contribution.supporterEmail}</td>
+                  <td className="py-2.5 pr-4">{contribution.supporterPhone ?? "—"}</td>
+                  <td className="py-2.5 pr-4 max-w-xs whitespace-normal">{contribution.supporterMessage ?? "—"}</td>
+                  <td className="py-2.5 pr-4">{contribution.categoryTitle}</td>
+                  <td className="py-2.5 pr-4 whitespace-nowrap">{formatMoney(contribution.amount)}</td>
+                  <td className="py-2.5 pr-4">{contribution.amount.currency}</td>
+                  <td className="py-2.5 pr-4">{contribution.paymentProvider ?? "—"}</td>
+                  <td className="py-2.5 pr-4 font-mono text-xs">{contribution.reference}</td>
+                  <td className="py-2.5 pr-4 font-mono text-xs">{contribution.providerReference ?? "—"}</td>
+                  <td className="py-2.5 whitespace-nowrap">{contribution.paymentStatus}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           {dashboard.contributions.length === 0 && (
-            <p className="py-6 text-sm text-fg-muted">No contributions yet.</p>
+            <p className="py-6 text-fg-muted text-sm">No contributions yet.</p>
           )}
         </Card>
 
         <Card className="mt-6 overflow-x-auto">
           <h2 className="font-display text-xl">RSVPs</h2>
-          <table className="mt-4 w-full min-w-[900px] text-sm text-left">
+          <table className="mt-4 w-full min-w-225 text-sm text-left">
             <thead>
               <tr className="border-border border-b text-fg-muted text-xs uppercase tracking-wide">
                 <th className="py-2">Name</th>
@@ -209,7 +226,7 @@ export function AdminPage() {
             </tbody>
           </table>
           {dashboard.rsvps.length === 0 && (
-            <p className="py-6 text-sm text-fg-muted">No RSVPs yet.</p>
+            <p className="py-6 text-fg-muted text-sm">No RSVPs yet.</p>
           )}
         </Card>
       </Container>

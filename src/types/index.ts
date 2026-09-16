@@ -121,6 +121,8 @@ export interface AdminContribution {
   supporterMessage?: string;
   isAnonymous: boolean;
   isPublic: boolean;
+  paymentProvider?: string;
+  providerReference?: string;
   paymentStatus: string;
   paidAt?: string;
   createdAt: string;

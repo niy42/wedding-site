@@ -14,35 +14,35 @@ export function GiftCategoryCard({ category, onSelect }: GiftCategoryCardProps) 
     <button
       type="button"
       onClick={() => onSelect(category)}
-      className="group flex flex-col items-start overflow-hidden border border-border-subtle text-left transition-colors hover:border-accent/40"
+      className="group flex flex-col items-start border border-border-subtle hover:border-accent/40 overflow-hidden text-left transition-colors"
     >
       <div className="w-full overflow-hidden">
         <img
           src={category.imageUrl}
           alt=""
           loading="lazy"
-          className="aspect-[4/3] w-full object-cover opacity-90 transition-all duration-700 ease-[var(--ease-editorial)] group-hover:scale-105 group-hover:opacity-100"
+          className="opacity-90 group-hover:opacity-100 w-full object-cover aspect-4/3 group-hover:scale-105 transition-all duration-700 ease-editorial"
         />
       </div>
-      <div className="flex w-full flex-1 flex-col p-7">
+      <div className="flex flex-col flex-1 p-7 w-full">
         <h3 className="font-display text-2xl">{category.title}</h3>
-        <p className="mt-3 flex-1 text-sm leading-relaxed text-fg-muted">{category.description}</p>
+        <p className="flex-1 mt-3 text-fg-muted text-sm leading-relaxed">{category.description}</p>
 
         <div className="mt-7">
           {percent !== null ? (
             <>
               <ProgressBar percent={percent} label={`${category.title} progress`} />
-              <div className="mt-3 flex items-baseline justify-between text-xs text-fg-faint">
+              <div className="flex justify-between items-baseline mt-3 text-fg-faint text-xs">
                 <span>{formatMoney(category.raised)} raised</span>
                 <span className="text-accent-soft">{percent}%</span>
               </div>
             </>
           ) : (
-            <p className="text-xs text-fg-faint">{formatMoney(category.raised)} raised so far</p>
+            <p className="text-fg-faint text-xs">{formatMoney(category.raised)} raised so far</p>
           )}
         </div>
 
-        <span className="mt-6 text-xs uppercase tracking-[0.18em] text-accent-soft transition-colors group-hover:text-accent">
+        <span className="mt-6 group-hover:text-accent text-xs uppercase tracking-[0.18em] transition-colors text-accent-soft">
           Give to this →
         </span>
       </div>

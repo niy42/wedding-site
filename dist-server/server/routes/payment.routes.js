@@ -159,7 +159,7 @@ export async function verifyPayment(rawReference) {
         method: "GET",
         query: {
             reference: `eq.${reference}`,
-            select: "amount_minor,currency",
+            select: "amount_minor,currency,supporter_name",
             limit: "1",
         },
     });
@@ -196,6 +196,7 @@ export async function verifyPayment(rawReference) {
         status: verification.status,
         amountMinor: verification.money.amountMinor,
         currency: verification.money.currency,
+        supporterName: rows[0].supporter_name,
     };
 }
 export async function handlePaystackWebhook(rawBody, headers) {

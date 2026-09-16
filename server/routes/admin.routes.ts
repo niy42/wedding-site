@@ -24,6 +24,8 @@ type ContributionRow = {
   supporter_message: string | null;
   is_anonymous: boolean;
   is_public: boolean;
+  payment_provider: string | null;
+  provider_reference: string | null;
   payment_status: string;
   paid_at: string | null;
   created_at: string;
@@ -69,7 +71,7 @@ export async function getAdminDashboard(req: IncomingMessage) {
     supabaseRequest<ContributionRow[]>("contributions", {
       method: "GET",
       query: {
-        select: "id,reference,category_id,amount_minor,currency,supporter_name,supporter_email,supporter_phone,supporter_message,is_anonymous,is_public,payment_status,paid_at,created_at",
+        select: "id,reference,category_id,amount_minor,currency,supporter_name,supporter_email,supporter_phone,supporter_message,is_anonymous,is_public,payment_provider,provider_reference,payment_status,paid_at,created_at",
         order: "created_at.desc",
       },
     }),
@@ -123,6 +125,8 @@ export async function getAdminDashboard(req: IncomingMessage) {
       supporterMessage: item.supporter_message ?? undefined,
       isAnonymous: item.is_anonymous,
       isPublic: item.is_public,
+      paymentProvider: item.payment_provider ?? undefined,
+      providerReference: item.provider_reference ?? undefined,
       paymentStatus: item.payment_status,
       paidAt: item.paid_at ?? undefined,
       createdAt: item.created_at,

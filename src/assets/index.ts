@@ -1,4 +1,4 @@
-import heroImage from "@/assets/hero.png";
+import heroImage from "@/assets/images/hero-image.jpg";
 import ChurchEnvNoColor from "@/assets/images/church-env-no-color.jpg";
 import ChurchEnv from "@/assets/images/church-env.jpg";
 import ChurchEnvCat from "@/assets/images/church-env-cat.jpg";

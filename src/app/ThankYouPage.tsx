@@ -6,7 +6,7 @@ import { api, ApiError } from "@/services/api-client";
 
 type VerificationState =
   | { status: "verifying" }
-  | { status: "successful" }
+  | { status: "successful"; supporterName?: string }
   | { status: "pending" }
   | { status: "failed" }
   | { status: "error" };
@@ -24,8 +24,9 @@ export function ThankYouPage() {
     api
       .verifyPayment(reference)
       .then((result) => {
-        if (result.status === "SUCCESSFUL") setState({ status: "successful" });
-        else if (result.status === "FAILED" || result.status === "CANCELLED")
+        if (result.status === "SUCCESSFUL") {
+          setState({ status: "successful", supporterName: result.supporterName });
+        } else if (result.status === "FAILED" || result.status === "CANCELLED")
           setState({ status: "failed" });
         else setState({ status: "pending" });
       })
@@ -44,7 +45,7 @@ export function ThankYouPage() {
         {state.status === "successful" && (
           <>
             <Heading level="display" as="p" italic className="text-accent-soft">
-              Thank you ❤️
+              Thank you{state.supporterName ? `, ${state.supporterName}` : ""} ❤️
             </Heading>
             <p className="mx-auto mt-5 max-w-md text-fg-muted">
               Your kindness means more to us. Thank you for being part of our
