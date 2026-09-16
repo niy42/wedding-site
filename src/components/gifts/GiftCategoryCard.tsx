@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { formatMoney, progressPercent } from "@/lib/currency";
 import type { GiftCategory } from "@/types";
@@ -12,39 +11,41 @@ export function GiftCategoryCard({ category, onSelect }: GiftCategoryCardProps) 
   const percent = category.target ? progressPercent(category.raised, category.target) : null;
 
   return (
-    <Card className="flex flex-col overflow-hidden p-0">
-      <img
-        src={category.imageUrl}
-        alt=""
-        loading="lazy"
-        className="aspect-[4/3] w-full object-cover"
-      />
-      <div className="flex flex-1 flex-col p-6">
-        <h3 className="font-display text-xl">{category.title}</h3>
-        <p className="mt-2 flex-1 text-sm text-charcoal/70">{category.description}</p>
+    <button
+      type="button"
+      onClick={() => onSelect(category)}
+      className="group flex flex-col items-start border border-border-subtle hover:border-accent/40 overflow-hidden text-left transition-colors"
+    >
+      <div className="w-full overflow-hidden">
+        <img
+          src={category.imageUrl}
+          alt=""
+          loading="lazy"
+          className="opacity-90 group-hover:opacity-100 w-full object-cover aspect-4/3 group-hover:scale-105 transition-all duration-700 ease-editorial"
+        />
+      </div>
+      <div className="flex flex-col flex-1 p-7 w-full">
+        <h3 className="font-display text-2xl">{category.title}</h3>
+        <p className="flex-1 mt-3 text-fg-muted text-sm leading-relaxed">{category.description}</p>
 
-        <div className="mt-5">
+        <div className="mt-7">
           {percent !== null ? (
             <>
               <ProgressBar percent={percent} label={`${category.title} progress`} />
-              <div className="mt-2 flex items-baseline justify-between text-xs text-sage">
+              <div className="flex justify-between items-baseline mt-3 text-fg-faint text-xs">
                 <span>{formatMoney(category.raised)} raised</span>
-                {category.target && <span>of {formatMoney(category.target)}</span>}
+                <span className="text-accent-soft">{percent}%</span>
               </div>
             </>
           ) : (
-            <p className="text-xs text-sage">{formatMoney(category.raised)} raised so far</p>
+            <p className="text-fg-faint text-xs">{formatMoney(category.raised)} raised so far</p>
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={() => onSelect(category)}
-          className="mt-5 inline-flex items-center justify-center rounded-[var(--radius-sm)] border border-ink/20 px-5 py-2.5 text-sm font-medium transition-colors hover:border-clay hover:text-clay"
-        >
-          Give to this
-        </button>
+        <span className="mt-6 group-hover:text-accent text-xs uppercase tracking-[0.18em] transition-colors text-accent-soft">
+          Give to this →
+        </span>
       </div>
-    </Card>
+    </button>
   );
 }

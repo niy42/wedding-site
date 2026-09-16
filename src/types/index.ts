@@ -5,14 +5,36 @@ export interface Money {
   currency: Currency;
 }
 
-export interface WeddingDetails {
+export type VenueDetails = {
+  name: string;
+  address: string;
+  mapUrl?: string;
+};
+
+export type ScheduleEvent = {
+  label: string;
+  startTimeISO: string;
+  officiatedBy?: string;
+};
+
+export type WeddingDetails = {
   partnerOneName: string;
   partnerTwoName: string;
   weddingDateISO: string;
-  ceremony: EventDetails;
-  reception: EventDetails;
   dressCode: string;
-}
+  venue: VenueDetails;
+  ceremony: ScheduleEvent;
+  reception: ScheduleEvent;
+};
+
+// export interface WeddingDetails {
+//   partnerOneName: string;
+//   partnerTwoName: string;
+//   weddingDateISO: string;
+//   ceremony: EventDetails;
+//   reception: EventDetails;
+//   dressCode: string;
+// }
 
 export interface EventDetails {
   label: string;
@@ -84,4 +106,47 @@ export interface PaymentInitializationResponse {
   reference: string;
   checkoutUrl?: string;
   provider: string;
+}
+
+
+export interface AdminContribution {
+  id: string;
+  reference: string;
+  categoryId: string;
+  categoryTitle: string;
+  amount: Money;
+  supporterName: string;
+  supporterEmail: string;
+  supporterPhone?: string;
+  supporterMessage?: string;
+  isAnonymous: boolean;
+  isPublic: boolean;
+  paymentProvider?: string;
+  providerReference?: string;
+  paymentStatus: string;
+  paidAt?: string;
+  createdAt: string;
+}
+
+export interface AdminRSVP {
+  id: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  attending: "yes" | "no";
+  guestCount: number;
+  guestNames?: string[];
+  dietaryNotes?: string;
+  note?: string;
+  createdAt: string;
+}
+
+export interface AdminDashboard {
+  totals: Money;
+  contributorCount: number;
+  rsvpCount: number;
+  attendingGuestCount: number;
+  categories: GiftCategory[];
+  contributions: AdminContribution[];
+  rsvps: AdminRSVP[];
 }

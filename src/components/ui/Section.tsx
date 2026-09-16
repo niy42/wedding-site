@@ -1,7 +1,12 @@
 import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
-type Tone = "parchment" | "ink" | "ivory";
+/**
+ * Tonal steps through the dark system — each section sits one shade
+ * apart from its neighbor so the page reads as tonal depth rather
+ * than a single flat black canvas.
+ */
+type Tone = "base" | "elevated" | "surface" | "plum";
 
 interface SectionProps extends HTMLAttributes<HTMLElement> {
   tone?: Tone;
@@ -9,15 +14,16 @@ interface SectionProps extends HTMLAttributes<HTMLElement> {
 }
 
 const toneClasses: Record<Tone, string> = {
-  parchment: "bg-parchment text-charcoal",
-  ivory: "bg-ivory text-charcoal",
-  ink: "bg-ink text-ivory",
+  base: "bg-bg",
+  elevated: "bg-bg-elevated",
+  surface: "bg-bg-surface",
+  plum: "bg-bg-plum",
 };
 
-export function Section({ className, tone = "parchment", ...props }: SectionProps) {
+export function Section({ className, tone = "base", ...props }: SectionProps) {
   return (
     <section
-      className={cn("py-20 sm:py-28", toneClasses[tone], className)}
+      className={cn("py-24 sm:py-32 text-fg", toneClasses[tone], className)}
       {...props}
     />
   );

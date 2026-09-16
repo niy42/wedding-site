@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "npm run server:build && node --env-file-if-exists=.env dist-server/server/index.js",
+    "server:build": "tsc -p server/tsconfig.json",
+    "server:start": "node dist-server/server/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "^5.3.0",

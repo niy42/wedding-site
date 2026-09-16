@@ -25,22 +25,22 @@ export function Dialog({ open, onClose, title, children }: DialogProps) {
       onClose={onClose}
       onCancel={onClose}
       aria-labelledby="dialog-title"
-      className="w-[min(560px,92vw)] rounded-[var(--radius-lg)] border border-ink/10 bg-ivory p-0 backdrop:bg-ink/60 open:animate-[fade-in_180ms_ease-out]"
+      className="fixed m-auto w-[min(560px,92vw)] max-h-[85vh] overflow-y-auto rounded-[var(--radius-lg)] border border-border bg-bg-elevated p-0 text-fg backdrop:bg-bg/85 open:animate-[fade-in_220ms_ease-out]"
     >
-      <div className="flex items-center justify-between border-b border-ink/10 px-6 py-4">
-        <h2 id="dialog-title" className="font-display text-lg">
+      <div className="flex items-center justify-between border-b border-border-subtle px-7 py-5">
+        <h2 id="dialog-title" className="font-display text-xl">
           {title}
         </h2>
         <button
           type="button"
           onClick={onClose}
           aria-label="Close dialog"
-          className="rounded-full p-1.5 text-ink/60 hover:bg-ink/5 hover:text-ink"
+          className="rounded-full p-1.5 text-fg-muted transition-colors hover:bg-bg-subtle hover:text-fg"
         >
           <X size={18} />
         </button>
       </div>
-      <div className="px-6 py-6">{children}</div>
+      <div className="px-7 py-7">{children}</div>
     </dialog>
   );
 }

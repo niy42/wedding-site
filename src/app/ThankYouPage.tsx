@@ -6,7 +6,7 @@ import { api, ApiError } from "@/services/api-client";
 
 type VerificationState =
   | { status: "verifying" }
-  | { status: "successful" }
+  | { status: "successful"; supporterName?: string }
   | { status: "pending" }
   | { status: "failed" }
   | { status: "error" };
@@ -24,8 +24,9 @@ export function ThankYouPage() {
     api
       .verifyPayment(reference)
       .then((result) => {
-        if (result.status === "SUCCESSFUL") setState({ status: "successful" });
-        else if (result.status === "FAILED" || result.status === "CANCELLED")
+        if (result.status === "SUCCESSFUL") {
+          setState({ status: "successful", supporterName: result.supporterName });
+        } else if (result.status === "FAILED" || result.status === "CANCELLED")
           setState({ status: "failed" });
         else setState({ status: "pending" });
       })
@@ -35,19 +36,19 @@ export function ThankYouPage() {
   }, [reference]);
 
   return (
-    <div className="flex min-h-screen items-center bg-ink text-ivory">
+    <div className="flex items-center bg-bg min-h-screen text-fg">
       <Container className="text-center">
         {state.status === "verifying" && (
-          <p className="text-ivory/70">Confirming your gift…</p>
+          <p className="text-fg-muted">Confirming your gift…</p>
         )}
 
         {state.status === "successful" && (
           <>
-            <Heading level="display" as="p" italic className="text-gold-bright">
-              Thank you ❤️
+            <Heading level="display" as="p" italic className="text-accent-soft">
+              Thank you{state.supporterName ? `, ${state.supporterName}` : ""} ❤️
             </Heading>
-            <p className="mx-auto mt-5 max-w-md text-ivory/75">
-              Your kindness means more to us than you know. Thank you for being part of our
+            <p className="mx-auto mt-5 max-w-md text-fg-muted">
+              Your kindness means more to us. Thank you for being part of our
               journey.
             </p>
           </>
@@ -55,10 +56,10 @@ export function ThankYouPage() {
 
         {state.status === "pending" && (
           <>
-            <Heading level="h2" as="p" className="text-ivory">
+            <Heading level="h2" as="p" className="text-fg">
               Almost there
             </Heading>
-            <p className="mx-auto mt-4 max-w-md text-ivory/70">
+            <p className="mx-auto mt-4 max-w-md text-fg-muted">
               We're still confirming your payment with our provider. This can take a minute —
               feel free to close this page, we'll email you a confirmation.
             </p>
@@ -67,15 +68,15 @@ export function ThankYouPage() {
 
         {(state.status === "failed" || state.status === "error") && (
           <>
-            <Heading level="h2" as="p" className="text-ivory">
+            <Heading level="h2" as="p" className="text-fg">
               We couldn't confirm that gift
             </Heading>
-            <p className="mx-auto mt-4 max-w-md text-ivory/70">
+            <p className="mx-auto mt-4 max-w-md text-fg-muted">
               {state.status === "failed"
                 ? "It looks like the payment didn't go through. No amount has been charged."
                 : "We couldn't reach our server to confirm this. If you were charged, please contact us and we'll sort it out."}
             </p>
-            <a href="/#gift" className="mt-6 inline-block text-sm text-gold-bright hover:underline">
+            <a href="/#gift" className="inline-block mt-6 text-sm hover:underline text-accent-soft">
               Return to the gift page →
             </a>
           </>

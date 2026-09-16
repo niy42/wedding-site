@@ -2,6 +2,8 @@ import type {
   ContributionRequest,
   PaymentInitializationResponse,
   RSVPFormValues,
+  GiftCategory,
+  AdminDashboard,
 } from "@/types";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
@@ -59,9 +61,27 @@ export const api = {
     }),
 
   verifyPayment: (reference: string) =>
-    request<{ status: string }>(`/payments/${encodeURIComponent(reference)}`),
+    request<{ reference: string; status: string; amountMinor: number; currency: string; supporterName?: string }>(`/payments/${encodeURIComponent(reference)}`),
 
-  getGiftCategories: () => request<unknown[]>("/gift-categories"),
+  getGiftCategories: () => request<GiftCategory[]>("/gift-categories"),
+
+  adminLogin: (passcode: string) =>
+    request<{ authenticated: true }>("/admin/login", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ passcode }),
+    }),
+
+  getAdminDashboard: () =>
+    request<AdminDashboard>("/admin/dashboard", {
+      credentials: "include",
+    }),
+
+  adminLogout: () =>
+    request<void>("/admin/logout", {
+      method: "POST",
+      credentials: "include",
+    }),
 };
 
 export { ApiError };

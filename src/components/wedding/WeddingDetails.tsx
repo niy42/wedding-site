@@ -1,70 +1,124 @@
-import { MapPin, Clock, Shirt } from "lucide-react";
+import { Clock, MapPin, Shirt } from "lucide-react";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
-import { Card } from "@/components/ui/Card";
 import { weddingDetails } from "@/lib/wedding-content";
-import type { EventDetails } from "@/types";
 
-function EventCard({ event }: { event: EventDetails }) {
-  const time = new Date(event.startTimeISO).toLocaleTimeString("en-GB", {
+function formatTime(timeISO: string) {
+  return new Date(timeISO).toLocaleTimeString("en-GB", {
     hour: "numeric",
     minute: "2-digit",
   });
+}
 
+function EventBlock({
+  label,
+  time,
+  description,
+}: {
+  label: string;
+  time: string;
+  description?: string;
+}) {
   return (
-    <Card>
-      <span className="text-xs uppercase tracking-[0.2em] text-gold">{event.label}</span>
-      <h3 className="mt-2 font-display text-2xl">{event.venueName}</h3>
+    <div className="border-t border-border-subtle pt-6">
+      <span className="eyebrow">{label}</span>
 
-      <div className="mt-5 flex flex-col gap-3 text-sm text-charcoal/75">
-        <div className="flex items-start gap-2.5">
-          <Clock size={16} className="mt-0.5 shrink-0 text-sage" />
-          <span>{time}</span>
-        </div>
-        <div className="flex items-start gap-2.5">
-          <MapPin size={16} className="mt-0.5 shrink-0 text-sage" />
-          <span>{event.address}</span>
+      <div className="mt-4 flex items-start gap-3 text-sm text-fg-muted">
+        <Clock
+          size={15}
+          className="mt-0.5 shrink-0 text-accent"
+          aria-hidden="true"
+        />
+
+        <div>
+          <p className="text-fg">{time}</p>
+
+          {description && (
+            <p className="mt-1 leading-relaxed">{description}</p>
+          )}
         </div>
       </div>
-
-      {event.mapUrl && (
-        <a
-          href={event.mapUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-5 inline-block text-sm font-medium text-clay hover:underline"
-        >
-          Get directions →
-        </a>
-      )}
-    </Card>
+    </div>
   );
 }
 
 export function WeddingDetails() {
+  const { venue, ceremony, dressCode } = weddingDetails;
+
   return (
-    <Section id="details" tone="parchment">
+    <Section id="details" tone="base">
       <Container>
-        <div className="max-w-xl">
-          <span className="text-xs uppercase tracking-[0.25em] text-gold">The Details</span>
-          <Heading level="h2" className="mt-3">
-            Join us as we celebrate
-          </Heading>
-        </div>
-
-        <div className="mt-12 grid gap-6 sm:grid-cols-2">
-          <EventCard event={weddingDetails.ceremony} />
-          <EventCard event={weddingDetails.reception} />
-        </div>
-
-        <Card className="mt-6 flex items-start gap-3">
-          <Shirt size={18} className="mt-0.5 shrink-0 text-sage" />
+        <div className="flex flex-col gap-14 sm:flex-row sm:items-start sm:justify-between">
+          {/* Intro */}
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-gold">Dress Code</p>
-            <p className="mt-1 text-charcoal/80">{weddingDetails.dressCode}</p>
+            <span className="eyebrow">The Details</span>
+
+            <Heading level="h2" className="mt-4">
+              Join us as we celebrate
+            </Heading>
+
+            <div className="mt-10 flex items-start gap-3 border-t border-border-subtle pt-8 text-sm text-fg-muted">
+              <Shirt
+                size={15}
+                className="mt-0.5 shrink-0 text-accent"
+                aria-hidden="true"
+              />
+
+              <div>
+                <p className="eyebrow mb-1.5">Dress Code</p>
+                <p className="leading-relaxed">{dressCode}</p>
+              </div>
+            </div>
           </div>
-        </Card>
+
+          {/* Event details */}
+          <div className="flex flex-col items-start justify-center">
+            {/* Shared venue */}
+            <div className="border-t border-border-subtle pt-0">
+              <span className="eyebrow">Venue</span>
+
+              <h3 className="mt-3 font-display text-3xl sm:text-4xl">
+                {venue.name}
+              </h3>
+
+              <div className="mt-6 flex items-start gap-3 text-sm text-fg-muted">
+                <MapPin
+                  size={15}
+                  className="mt-0.5 shrink-0 text-accent"
+                  aria-hidden="true"
+                />
+
+                <span className="leading-relaxed">{venue.address}</span>
+              </div>
+
+              {venue.mapUrl && (
+                <a
+                  href={venue.mapUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-6 inline-block text-xs uppercase tracking-[0.15em] text-accent-soft transition-opacity hover:opacity-70"
+                >
+                  Get directions →
+                </a>
+              )}
+            </div>
+
+            {/* Schedule */}
+            <div className="mt-10 grid gap-10 sm:grid-cols-1 sm:gap-12">
+              <EventBlock
+                label={ceremony.label}
+                time={`From ${formatTime(ceremony.startTimeISO)} am`}
+                description={ceremony.officiatedBy}
+              />
+
+              {/* <EventBlock
+                label={reception.label}
+                time={formatTime(reception.startTimeISO)}
+              /> */}
+            </div>
+          </div>
+        </div>
       </Container>
     </Section>
   );

@@ -1,28 +1,33 @@
-import type { GalleryImage, GiftCategory, StoryMilestone, WeddingDetails } from "@/types";
+import { ChurchEnvNoColor, Golden, IntroHome, Proposal, ProposalHands, ProposalHandsLove, ProposalTwo } from "@/assets";
+import type { GalleryImage, StoryMilestone, WeddingDetails } from "@/types";
+
 
 /**
- * Placeholder content — replace with the real names, date, venues,
- * and copy before launch. In production this should come from the
- * admin-managed content API rather than being hardcoded here.
+ * Static wedding content. The current backend does not expose a content-management
+ * endpoint for these fields, so they remain application content rather than mock API data.
  */
+export const THEME_ID = "JossyAndrew2026";
+
 export const weddingDetails: WeddingDetails = {
-  partnerOneName: "Niyi",
-  partnerTwoName: "Amara",
-  weddingDateISO: "2027-03-20T13:00:00+01:00",
-  dressCode: "Garden formal — aso-oke and jewel tones welcome",
-  ceremony: {
-    label: "Ceremony",
-    venueName: "St. Saviour's Church",
-    address: "12 Ikoyi Crescent, Lagos, Nigeria",
-    startTimeISO: "2027-03-20T13:00:00+01:00",
-    mapUrl: "https://maps.google.com",
+  partnerOneName: "Josephine",
+  partnerTwoName: "Andrew",
+  weddingDateISO: "2027-03-20T10:00:00+01:00",
+  dressCode: "Black tie — deep jewel tones and aso-oke warmly welcomed",
+
+  venue: {
+    name: "Lion's Gate Hotel",
+    address: "Along Kaduna Road, Keffi, Nasarawa State",
   },
+
+  ceremony: {
+    label: "Wedding Ceremony and Reception",
+    officiatedBy: "The Redeemed Christian Church of God (RCCG)",
+    startTimeISO: "2027-03-20T10:00:00+01:00",
+  },
+
   reception: {
     label: "Reception",
-    venueName: "The Terrace, Eko Hotel",
-    address: "Adetokunbo Ademola Street, Victoria Island, Lagos",
     startTimeISO: "2027-03-20T17:00:00+01:00",
-    mapUrl: "https://maps.google.com",
   },
 };
 
@@ -32,63 +37,52 @@ export const storyMilestones: StoryMilestone[] = [
     year: "2021",
     title: "A chance introduction",
     body: "We met through mutual friends on a rainy Lagos evening that neither of us expected to remember — and haven't stopped talking since.",
-    imageUrl: "https://picsum.photos/seed/wedding-story-1/800/1000",
+    imageUrl: ProposalTwo,
   },
   {
     id: "distance",
     year: "2023",
     title: "Miles apart, closer than ever",
     body: "A season across two continents taught us what we already suspected: this was worth building a life around.",
-    imageUrl: "https://picsum.photos/seed/wedding-story-2/800/1000",
+    imageUrl: ProposalHands,
   },
   {
     id: "proposal",
     year: "2025",
     title: "The question",
     body: "On the same street where we first met, under the same kind of rain, we said yes to forever.",
-    imageUrl: "https://picsum.photos/seed/wedding-story-3/800/1000",
+    imageUrl: ProposalHandsLove,
   },
 ];
 
-export const galleryImages: GalleryImage[] = Array.from({ length: 8 }).map((_, i) => ({
-  id: `gallery-${i + 1}`,
-  src: `https://picsum.photos/seed/wedding-gallery-${i + 1}/1200/1500`,
-  alt: `Photo ${i + 1} of the couple`,
-  width: 1200,
-  height: 1500,
-}));
-
-export const giftCategories: GiftCategory[] = [
+export const galleryImages: GalleryImage[] = [
   {
-    id: "celebration",
-    title: "The Celebration",
-    description: "Help us bring the wedding day itself to life — flowers, music, and the little details that make it unforgettable.",
-    imageUrl: "https://picsum.photos/seed/wedding-gift-celebration/800/600",
-    target: { amountMinor: 300_000_00, currency: "NGN" },
-    raised: { amountMinor: 96_500_00, currency: "NGN" },
+    id: "gallery-1",
+    src: IntroHome,
+    alt: "Photo 1 of Josephine and Andrew",
+    width: 1200,
+    height: 1500,
   },
   {
-    id: "honeymoon",
-    title: "The Honeymoon",
-    description: "Our first trip as a married couple — every gift here goes straight toward the adventure.",
-    imageUrl: "https://picsum.photos/seed/wedding-gift-honeymoon/800/600",
-    target: { amountMinor: 500_000_00, currency: "NGN" },
-    raised: { amountMinor: 212_000_00, currency: "NGN" },
+    id: "gallery-2",
+    src: ChurchEnvNoColor,
+    alt: "Photo 2 of Josephine and Andrew",
+    width: 1200,
+    height: 1500,
   },
   {
-    id: "new-home",
-    title: "Our New Home",
-    description: "Setting up the place we'll build our life together, one room at a time.",
-    imageUrl: "https://picsum.photos/seed/wedding-gift-home/800/600",
-    target: { amountMinor: 400_000_00, currency: "NGN" },
-    raised: { amountMinor: 58_000_00, currency: "NGN" },
+    id: "gallery-3",
+    src: Golden,
+    alt: "Photo 3 of Josephine and Andrew",
+    width: 1200,
+    height: 1500,
   },
   {
-    id: "blessing",
-    title: "A General Blessing",
-    description: "No specific goal — just a gift from your heart to celebrate our new chapter, however you'd like to bless it.",
-    imageUrl: "https://picsum.photos/seed/wedding-gift-blessing/800/600",
-    raised: { amountMinor: 41_000_00, currency: "NGN" },
+    id: "gallery-4",
+    src: Proposal,
+    alt: "Photo 4 of Josephine and Andrew",
+    width: 1200,
+    height: 1500,
   },
 ];
 

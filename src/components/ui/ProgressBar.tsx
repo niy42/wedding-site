@@ -3,6 +3,7 @@ interface ProgressBarProps {
   label?: string;
 }
 
+/** A minimal hairline indicator — not a dashboard-style pill bar. */
 export function ProgressBar({ percent, label }: ProgressBarProps) {
   const clamped = Math.max(0, Math.min(100, percent));
   return (
@@ -12,10 +13,10 @@ export function ProgressBar({ percent, label }: ProgressBarProps) {
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label={label}
-      className="h-1.5 w-full overflow-hidden rounded-full bg-ink/10"
+      className="h-px w-full overflow-hidden bg-border"
     >
       <div
-        className="h-full rounded-full bg-gold transition-[width] duration-700 ease-[var(--ease-editorial)]"
+        className="h-full bg-accent transition-[width] duration-1000 ease-[var(--ease-editorial)]"
         style={{ width: `${clamped}%` }}
       />
     </div>

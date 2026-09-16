@@ -50,12 +50,12 @@ export function RSVPForm() {
 
   if (state.status === "success" || state.status === "duplicate") {
     return (
-      <Section id="rsvp" tone="ink">
+      <Section id="rsvp" tone="elevated">
         <Container className="text-center">
-          <Heading level="h2" as="p" italic className="text-ivory">
+          <Heading level="h2" as="p" italic className="text-fg">
             {state.status === "success" ? "See you there" : "You're already on the list"}
           </Heading>
-          <p className="mx-auto mt-4 max-w-md text-ivory/70">
+          <p className="mx-auto mt-5 max-w-md text-fg-muted">
             {state.status === "success"
               ? "Thank you for letting us know — we can't wait to celebrate with you."
               : "We already have your RSVP recorded. Reach out to us directly if you need to make a change."}
@@ -66,22 +66,22 @@ export function RSVPForm() {
   }
 
   return (
-    <Section id="rsvp" tone="ink">
-      <Container className="grid gap-10 sm:grid-cols-[0.9fr_1.1fr] sm:items-start">
+    <Section id="rsvp" tone="elevated">
+      <Container className="grid gap-12 sm:grid-cols-[0.85fr_1.15fr] sm:items-start">
         <div>
-          <span className="text-xs uppercase tracking-[0.25em] text-gold-bright">RSVP</span>
-          <Heading level="h2" as="p" className="mt-3 text-ivory">
+          <span className="eyebrow">RSVP</span>
+          <Heading level="h2" as="p" className="mt-4">
             Will you join us?
           </Heading>
-          <p className="mt-4 text-ivory/70">
+          <p className="mt-5 max-w-sm text-fg-muted">
             Kindly let us know by six weeks before the wedding so we can plan properly for
             everyone.
           </p>
         </div>
 
-        <Card className="bg-ivory">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
-            <div className="grid gap-5 sm:grid-cols-2">
+        <Card>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6" noValidate>
+            <div className="grid gap-6 sm:grid-cols-2">
               <Input
                 label="Full name"
                 required
@@ -109,15 +109,15 @@ export function RSVPForm() {
               autoComplete="tel"
             />
 
-            <fieldset className="flex flex-col gap-2">
-              <legend className="text-xs font-medium uppercase tracking-wide text-sage">
+            <fieldset className="flex flex-col gap-2.5">
+              <legend className="text-[0.7rem] font-medium uppercase tracking-[0.15em] text-fg-muted">
                 Will you be attending?
               </legend>
               <div className="flex gap-3">
                 {(["yes", "no"] as const).map((option) => (
                   <label
                     key={option}
-                    className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-ink/20 px-4 py-3 text-sm has-[:checked]:border-clay has-[:checked]:bg-clay/5"
+                    className="flex flex-1 cursor-pointer items-center justify-center gap-2 border border-border px-4 py-3 text-sm text-fg-muted transition-colors has-[:checked]:border-accent has-[:checked]:text-accent-soft"
                   >
                     <input
                       type="radio"
@@ -125,7 +125,7 @@ export function RSVPForm() {
                       value={option}
                       checked={values.attending === option}
                       onChange={() => update("attending", option)}
-                      className="accent-clay"
+                      className="accent-[var(--color-accent)]"
                     />
                     {option === "yes" ? "Joyfully accept" : "Regretfully decline"}
                   </label>
@@ -160,7 +160,7 @@ export function RSVPForm() {
             />
 
             {state.status === "error" && (
-              <p role="alert" className="text-sm text-clay">
+              <p role="alert" className="text-sm text-rose">
                 {state.message}
               </p>
             )}
