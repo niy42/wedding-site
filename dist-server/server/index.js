@@ -4,6 +4,7 @@ import { assertBodySize } from "./lib/validation.js";
 import { RateLimiter } from "./lib/rate-limit.js";
 import { getGiftCategories, createRSVP } from "./routes/content.routes.js";
 import { adminLogin, adminLogout, getAdminDashboard } from "./routes/admin.routes.js";
+import { getExchangeRates } from "./routes/exchange-rates.js";
 const port = Number(process.env.PORT ?? 4000);
 const allowedOrigins = new Set((process.env.CORS_ORIGINS ?? "http://localhost:5173")
     .split(",")
@@ -14,6 +15,7 @@ const limiters = {
     rsvp: new RateLimiter(10, 60_000),
     initialize: new RateLimiter(10, 60_000),
     verify: new RateLimiter(30, 60_000),
+    exchangeRates: new RateLimiter(20, 60_000),
 };
 setInterval(() => Object.values(limiters).forEach((limiter) => limiter.cleanup()), 60_000).unref();
 function json(res, status, payload) {
@@ -72,6 +74,15 @@ const server = createServer(async (req, res) => {
         if (req.method === "GET" &&
             url.pathname === "/api/gift-categories") {
             return json(res, 200, await getGiftCategories());
+        }
+        if (req.method === "GET" &&
+            url.pathname === "/api/exchange-rates") {
+            if (!limiters.exchangeRates.allow(key)) {
+                return json(res, 429, {
+                    message: "Too many requests",
+                });
+            }
+            return json(res, 200, await getExchangeRates());
         }
         if (req.method === "POST" &&
             url.pathname === "/api/rsvp") {

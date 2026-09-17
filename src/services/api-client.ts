@@ -65,6 +65,11 @@ export const api = {
 
   getGiftCategories: () => request<GiftCategory[]>("/gift-categories"),
 
+  getExchangeRates: () =>
+    request<{ base: "USD"; rates: Record<string, number>; updatedAt: string }>(
+      "/exchange-rates",
+    ),
+
   adminLogin: (passcode: string) =>
     request<{ authenticated: true }>("/admin/login", {
       method: "POST",

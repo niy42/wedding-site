@@ -7,6 +7,7 @@ import { isValidContributionAmount, toMinorUnits } from "@/lib/currency";
 import { suggestedAmountsMajor } from "@/lib/wedding-content";
 import { api, ApiError } from "@/services/api-client";
 import { cn } from "@/lib/cn";
+import { CurrencyConverter } from "@/features/contributions/CurrencyConverter";
 import type { Currency, GiftCategory } from "@/types";
 
 interface ContributionFlowProps {
@@ -129,6 +130,13 @@ export function ContributionFlow({ category, onClose }: ContributionFlowProps) {
               setAmountMajor(null);
             }}
             placeholder={`e.g. 15000`}
+            hint="Payments are entered in Nigerian Naira (NGN), even if your card or account is in another currency. Your card provider handles the conversion."
+          />
+          <CurrencyConverter
+            onConvertedAmount={(value) => {
+              setCustomAmount(String(value));
+              setAmountMajor(null);
+            }}
           />
           <Button
             size="lg"

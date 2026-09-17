@@ -55,3 +55,27 @@ export function isValidContributionAmount(majorAmount: number, currency: Currenc
   // Reject sub-cent precision entered by the user (e.g. 10.005).
   return Math.round(majorAmount * MINOR_UNIT_FACTOR) === majorAmount * MINOR_UNIT_FACTOR;
 }
+
+export function convertCurrencyAmount(
+  amount: number,
+  sourceCurrency: Exclude<Currency, "NGN">,
+  ratesFromUsd: Record<string, number>,
+): number | null {
+  if (!Number.isFinite(amount) || amount <= 0) return null;
+
+  const ngnPerUsd = ratesFromUsd.NGN;
+  const sourcePerUsd = sourceCurrency === "USD"
+    ? 1
+    : ratesFromUsd[sourceCurrency];
+
+  if (
+    !Number.isFinite(ngnPerUsd) ||
+    ngnPerUsd <= 0 ||
+    !Number.isFinite(sourcePerUsd) ||
+    sourcePerUsd <= 0
+  ) {
+    return null;
+  }
+
+  return Math.round(amount * (ngnPerUsd / sourcePerUsd));
+}

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   addMoney,
+  convertCurrencyAmount,
   formatMoney,
   isValidContributionAmount,
   progressPercent,
@@ -77,5 +78,22 @@ describe("isValidContributionAmount", () => {
 
   it("rejects non-finite input", () => {
     expect(isValidContributionAmount(Number.NaN, "USD")).toBe(false);
+  });
+});
+
+describe("convertCurrencyAmount", () => {
+  const rates = { USD: 1, GBP: 0.75, EUR: 0.87, NGN: 1320 };
+
+  it("converts USD to an approximate NGN amount", () => {
+    expect(convertCurrencyAmount(100, "USD", rates)).toBe(132000);
+  });
+
+  it("converts GBP to NGN using the shared USD base", () => {
+    expect(convertCurrencyAmount(100, "GBP", rates)).toBe(176000);
+  });
+
+  it("rejects invalid amounts or incomplete rates", () => {
+    expect(convertCurrencyAmount(0, "USD", rates)).toBeNull();
+    expect(convertCurrencyAmount(100, "EUR", { USD: 1, NGN: 1320 })).toBeNull();
   });
 });
