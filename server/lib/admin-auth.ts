@@ -1,25 +1,42 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
-import type { IncomingMessage, ServerResponse } from "node:http";
+import type { AppEnv } from "../runtime.js";
 
 const COOKIE_NAME = "admin_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 8;
 
-function requiredEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) throw new Error(`${name} must be set`);
-  return value;
+function bytesToBase64Url(bytes: Uint8Array): string {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
 }
 
-function secret(): string {
-  return requiredEnv("ADMIN_SESSION_SECRET");
+function base64UrlToBytes(value: string): Uint8Array {
+  const normalized = value.replaceAll("-", "+").replaceAll("_", "/").padEnd(Math.ceil(value.length / 4) * 4, "=");
+  const binary = atob(normalized);
+  return Uint8Array.from(binary, (char) => char.charCodeAt(0));
 }
 
-function sign(value: string): string {
-  return createHmac("sha256", secret()).update(value).digest("base64url");
+async function hmac(value: string, secret: string): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  return bytesToBase64Url(new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(value))));
 }
 
-function parseCookies(req: IncomingMessage): Record<string, string> {
-  const header = req.headers.cookie ?? "";
+async function timingSafeEqual(a: string, b: string): Promise<boolean> {
+  const left = new TextEncoder().encode(a);
+  const right = new TextEncoder().encode(b);
+  if (left.length !== right.length) return false;
+  let diff = 0;
+  for (let i = 0; i < left.length; i++) diff |= left[i] ^ right[i];
+  return diff === 0;
+}
+
+function parseCookies(request: Request): Record<string, string> {
+  const header = request.headers.get("cookie") ?? "";
   return Object.fromEntries(
     header.split(";").map((part) => {
       const index = part.indexOf("=");
@@ -29,57 +46,37 @@ function parseCookies(req: IncomingMessage): Record<string, string> {
   );
 }
 
-export function setAdminSession(res: ServerResponse): void {
-  const payload = Buffer.from(
-    JSON.stringify({ exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS }),
-  ).toString("base64url");
-  const value = `${payload}.${sign(payload)}`;
-  const production = process.env.NODE_ENV === "production";
-  const secure = production ? "; Secure" : "";
+export async function createAdminSessionCookie(env: AppEnv): Promise<string> {
+  const payload = bytesToBase64Url(new TextEncoder().encode(JSON.stringify({
+    exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
+  })));
+  const value = `${payload}.${await hmac(payload, env.ADMIN_SESSION_SECRET)}`;
+  const production = env.NODE_ENV === "production";
   const sameSite = production ? "None" : "Strict";
-  res.setHeader(
-    "Set-Cookie",
-    `${COOKIE_NAME}=${encodeURIComponent(value)}; Path=/; Max-Age=${SESSION_TTL_SECONDS}; HttpOnly; SameSite=${sameSite}${secure}`,
-  );
+  const secure = production ? "; Secure" : "";
+  return `${COOKIE_NAME}=${encodeURIComponent(value)}; Path=/; Max-Age=${SESSION_TTL_SECONDS}; HttpOnly; SameSite=${sameSite}${secure}`;
 }
 
-export function clearAdminSession(res: ServerResponse): void {
-  res.setHeader(
-    "Set-Cookie",
-    `${COOKIE_NAME}=; Path=/; Max-Age=0; HttpOnly; SameSite=Strict`,
-  );
+export function clearAdminSessionCookie(): string {
+  return `${COOKIE_NAME}=; Path=/; Max-Age=0; HttpOnly; SameSite=Strict`;
 }
 
-export function isAdminAuthenticated(req: IncomingMessage): boolean {
-  const value = parseCookies(req)[COOKIE_NAME];
+export async function isAdminAuthenticated(request: Request, env: AppEnv): Promise<boolean> {
+  const value = parseCookies(request)[COOKIE_NAME];
   if (!value) return false;
-
   const [payload, signature] = value.split(".");
   if (!payload || !signature) return false;
-
-  const expected = sign(payload);
-  const actualBuffer = Buffer.from(signature);
-  const expectedBuffer = Buffer.from(expected);
-  if (
-    actualBuffer.length !== expectedBuffer.length ||
-    !timingSafeEqual(actualBuffer, expectedBuffer)
-  ) {
-    return false;
-  }
-
+  const expected = await hmac(payload, env.ADMIN_SESSION_SECRET);
+  if (!(await timingSafeEqual(signature, expected))) return false;
   try {
-    const parsed = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as { exp?: number };
+    const parsed = JSON.parse(new TextDecoder().decode(base64UrlToBytes(payload))) as { exp?: number };
     return typeof parsed.exp === "number" && parsed.exp > Math.floor(Date.now() / 1000);
   } catch {
     return false;
   }
 }
 
-export function verifyAdminPasscode(passcode: unknown): boolean {
-  const configured = requiredEnv("ADMIN_PASSCODE");
+export async function verifyAdminPasscode(passcode: unknown, env: AppEnv): Promise<boolean> {
   if (typeof passcode !== "string") return false;
-
-  const actual = Buffer.from(passcode);
-  const expected = Buffer.from(configured);
-  return actual.length === expected.length && timingSafeEqual(actual, expected);
+  return timingSafeEqual(passcode, env.ADMIN_PASSCODE);
 }

@@ -1,0 +1,8 @@
+PAYMENT_PROVIDER=paystack
+PAYSTACK_SECRET_KEY=sk_test_your_test_secret_key
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+APP_BASE_URL=http://localhost:5173
+CORS_ORIGINS=http://localhost:5173
+ADMIN_PASSCODE=change_this_in_local_development
+ADMIN_SESSION_SECRET=replace_with_a_long_random_secret

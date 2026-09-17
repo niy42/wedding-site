@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": []
+  },
+  "include": [
+    "./**/*.ts",
+    "../server/app.ts",
+    "../server/runtime.ts",
+    "../server/db/**/*.ts",
+    "../server/lib/admin-auth.ts",
+    "../server/lib/rate-limit.ts",
+    "../server/lib/validation.ts",
+    "../server/routes/**/*.ts",
+    "../server/payments/**/*.ts"
+  ],
+  "exclude": [
+    "../server/**/*.test.ts"
+  ]
+}

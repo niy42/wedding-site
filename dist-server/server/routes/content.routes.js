@@ -1,8 +1,8 @@
 import { supabaseRequest } from "../db/database.js";
 import { HttpError } from "./payment.routes.js";
-export async function getGiftCategories() {
+export async function getGiftCategories(env) {
     const [categories, contributions] = await Promise.all([
-        supabaseRequest("gift_categories", {
+        supabaseRequest(env, "gift_categories", {
             method: "GET",
             query: {
                 is_active: "eq.true",
@@ -10,7 +10,7 @@ export async function getGiftCategories() {
                 order: "created_at.asc",
             },
         }),
-        supabaseRequest("contributions", {
+        supabaseRequest(env, "contributions", {
             method: "GET",
             query: {
                 payment_status: "eq.SUCCESSFUL",
@@ -62,15 +62,15 @@ function parseRSVP(body) {
         note: typeof value.note === "string" ? value.note.trim() || undefined : undefined,
     };
 }
-export async function createRSVP(body) {
+export async function createRSVP(env, body) {
     const input = parseRSVP(body);
-    const existing = await supabaseRequest("rsvps", {
+    const existing = await supabaseRequest(env, "rsvps", {
         method: "GET",
         query: { email: `eq.${input.email}`, select: "id", limit: "1" },
     });
     if (existing.length > 0)
         return { status: "duplicate" };
-    await supabaseRequest("rsvps", {
+    await supabaseRequest(env, "rsvps", {
         method: "POST",
         body: JSON.stringify({
             full_name: input.fullName,

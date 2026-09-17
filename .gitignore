@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 
 .env
+.wrangler
+.dev.vars
+worker-configuration.d.ts
+dist-server

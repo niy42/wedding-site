@@ -1,4 +1,5 @@
 import { supabaseRequest } from "../db/database.js";
+import type { AppEnv } from "../runtime.js";
 import { HttpError } from "./payment.routes.js";
 
 type GiftCategoryRow = {
@@ -15,9 +16,9 @@ type ContributionRow = {
   amount_minor: number;
 };
 
-export async function getGiftCategories() {
+export async function getGiftCategories(env: AppEnv) {
   const [categories, contributions] = await Promise.all([
-    supabaseRequest<GiftCategoryRow[]>("gift_categories", {
+    supabaseRequest<GiftCategoryRow[]>(env, "gift_categories", {
       method: "GET",
       query: {
         is_active: "eq.true",
@@ -25,7 +26,7 @@ export async function getGiftCategories() {
         order: "created_at.asc",
       },
     }),
-    supabaseRequest<ContributionRow[]>("contributions", {
+    supabaseRequest<ContributionRow[]>(env, "contributions", {
       method: "GET",
       query: {
         payment_status: "eq.SUCCESSFUL",
@@ -97,16 +98,16 @@ function parseRSVP(body: unknown): RSVPInput {
   };
 }
 
-export async function createRSVP(body: unknown) {
+export async function createRSVP(env: AppEnv, body: unknown) {
   const input = parseRSVP(body);
-  const existing = await supabaseRequest<Array<{ id: string }>>("rsvps", {
+  const existing = await supabaseRequest<Array<{ id: string }>>(env, "rsvps", {
     method: "GET",
     query: { email: `eq.${input.email}`, select: "id", limit: "1" },
   });
 
   if (existing.length > 0) return { status: "duplicate" as const };
 
-  await supabaseRequest("rsvps", {
+  await supabaseRequest(env, "rsvps", {
     method: "POST",
     body: JSON.stringify({
       full_name: input.fullName,

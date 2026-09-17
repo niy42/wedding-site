@@ -1,346 +1,40 @@
-import {
-  createServer,
-  type IncomingMessage,
-  type ServerResponse,
-} from "node:http";
+import { createServer } from "node:http";
+import { app } from "./app.js";
+import type { AppEnv } from "./runtime.js";
 
-import {
-  createContribution,
-  handlePaystackWebhook,
-  initializePayment,
-  verifyPayment,
-  HttpError,
-} from "./routes/payment.routes.js";
-
-import { assertBodySize } from "./lib/validation.js";
-import { RateLimiter } from "./lib/rate-limit.js";
-import { getGiftCategories, createRSVP } from "./routes/content.routes.js";
-import { adminLogin, adminLogout, getAdminDashboard } from "./routes/admin.routes.js";
-import { getExchangeRates } from "./routes/exchange-rates.js";
+const env: AppEnv = {
+  PAYMENT_PROVIDER: (process.env.PAYMENT_PROVIDER ?? "paystack") as "paystack",
+  PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY ?? "",
+  SUPABASE_URL: process.env.SUPABASE_URL ?? "",
+  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
+  APP_BASE_URL: process.env.APP_BASE_URL ?? "http://localhost:5173",
+  CORS_ORIGINS: process.env.CORS_ORIGINS ?? "http://localhost:5173",
+  ADMIN_PASSCODE: process.env.ADMIN_PASSCODE ?? "",
+  ADMIN_SESSION_SECRET: process.env.ADMIN_SESSION_SECRET ?? "",
+  NODE_ENV: process.env.NODE_ENV,
+};
 
 const port = Number(process.env.PORT ?? 4000);
 
-const allowedOrigins = new Set(
-  (process.env.CORS_ORIGINS ?? "http://localhost:5173")
-    .split(",")
-    .map((value) => value.trim())
-    .filter(Boolean),
-);
-
-const limiters = {
-  contribution: new RateLimiter(10, 60_000),
-  rsvp: new RateLimiter(10, 60_000),
-  initialize: new RateLimiter(10, 60_000),
-  verify: new RateLimiter(30, 60_000),
-  exchangeRates: new RateLimiter(20, 60_000),
-};
-
-setInterval(
-  () => Object.values(limiters).forEach((limiter) => limiter.cleanup()),
-  60_000,
-).unref();
-
-function json(
-  res: ServerResponse,
-  status: number,
-  payload: unknown,
-): void {
-  res.statusCode = status;
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
-  res.setHeader("Cache-Control", "no-store");
-  res.end(JSON.stringify(payload));
-}
-
-function cors(
-  req: IncomingMessage,
-  res: ServerResponse,
-): void {
-  const origin = req.headers.origin;
-
-  if (origin && allowedOrigins.has(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader("Vary", "Origin");
-  }
-
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, x-paystack-signature",
-  );
-
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET,POST,OPTIONS",
-  );
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-}
-
-function clientKey(req: IncomingMessage): string {
-  return (
-    req.headers["x-forwarded-for"]?.toString().split(",")[0].trim() ||
-    req.socket.remoteAddress ||
-    "unknown"
-  );
-}
-
-async function readBody(req: IncomingMessage): Promise<string> {
-  const chunks: Buffer[] = [];
-  let size = 0;
-
-  for await (const chunk of req) {
-    const buffer = Buffer.isBuffer(chunk)
-      ? chunk
-      : Buffer.from(chunk);
-
-    size += buffer.length;
-
-    if (size > 32 * 1024) {
-      throw new HttpError(413, "Request body is too large");
-    }
-
-    chunks.push(buffer);
-  }
-
-  const raw = Buffer.concat(chunks).toString("utf8");
-
-  assertBodySize(raw);
-
-  return raw;
-}
-
 const server = createServer(async (req, res) => {
-  cors(req, res);
-
-  if (req.method === "OPTIONS") {
-    res.statusCode = 204;
-    return res.end();
+  const protocol = (req.headers["x-forwarded-proto"] ?? "http").toString().split(",")[0];
+  const host = req.headers.host ?? "localhost";
+  const url = `${protocol}://${host}${req.url ?? "/"}`;
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(req.headers)) {
+    if (Array.isArray(value)) value.forEach((item) => headers.append(key, item));
+    else if (value != null) headers.set(key, value);
   }
-
-  try {
-    const url = new URL(
-      req.url ?? "/",
-      `http://${req.headers.host ?? "localhost"}`,
-    );
-
-    const key = clientKey(req);
-
-    if (
-      req.method === "GET" &&
-      url.pathname === "/health"
-    ) {
-      return json(res, 200, {
-        status: "ok",
-      });
-    }
-
-    if (
-      req.method === "GET" &&
-      url.pathname === "/api/gift-categories"
-    ) {
-      return json(res, 200, await getGiftCategories());
-    }
-
-    if (
-      req.method === "GET" &&
-      url.pathname === "/api/exchange-rates"
-    ) {
-      if (!limiters.exchangeRates.allow(key)) {
-        return json(res, 429, {
-          message: "Too many requests",
-        });
-      }
-
-      return json(res, 200, await getExchangeRates());
-    }
-
-    if (
-      req.method === "POST" &&
-      url.pathname === "/api/rsvp"
-    ) {
-      if (!limiters.rsvp.allow(key)) {
-        return json(res, 429, { message: "Too many requests" });
-      }
-
-      const raw = await readBody(req);
-      let body: unknown;
-      try {
-        body = JSON.parse(raw);
-      } catch {
-        throw new HttpError(400, "Invalid JSON payload");
-      }
-
-      return json(res, 201, await createRSVP(body));
-    }
-
-    if (
-      req.method === "POST" &&
-      url.pathname === "/api/admin/login"
-    ) {
-      const raw = await readBody(req);
-      let body: unknown;
-      try {
-        body = JSON.parse(raw);
-      } catch {
-        throw new HttpError(400, "Invalid JSON payload");
-      }
-      return json(res, 200, await adminLogin(res, body));
-    }
-
-    if (
-      req.method === "POST" &&
-      url.pathname === "/api/admin/logout"
-    ) {
-      return json(res, 200, adminLogout(res));
-    }
-
-    if (
-      req.method === "GET" &&
-      url.pathname === "/api/admin/dashboard"
-    ) {
-      return json(res, 200, await getAdminDashboard(req));
-    }
-
-    if (
-      req.method === "POST" &&
-      url.pathname === "/api/payments/webhook"
-    ) {
-      const rawBody = await readBody(req);
-
-      const headers = Object.fromEntries(
-        Object.entries(req.headers).map(([key, value]) => [
-          key.toLowerCase(),
-          Array.isArray(value) ? value[0] ?? "" : value ?? "",
-        ]),
-      );
-
-      const result = await handlePaystackWebhook(
-        rawBody,
-        headers,
-      );
-
-      return result.accepted
-        ? json(res, 200, { received: true })
-        : json(res, 401, {
-          message: "Invalid webhook signature",
-        });
-    }
-
-    if (
-      req.method === "POST" &&
-      url.pathname === "/api/contributions"
-    ) {
-      if (!limiters.contribution.allow(key)) {
-        return json(res, 429, {
-          message: "Too many requests",
-        });
-      }
-
-      const raw = await readBody(req);
-
-      let body: unknown;
-
-      try {
-        body = JSON.parse(raw);
-      } catch {
-        throw new HttpError(400, "Invalid JSON payload");
-      }
-
-      return json(
-        res,
-        201,
-        await createContribution(body),
-      );
-    }
-
-    if (
-      req.method === "POST" &&
-      url.pathname === "/api/payments/initialize"
-    ) {
-      if (!limiters.initialize.allow(key)) {
-        return json(res, 429, {
-          message: "Too many requests",
-        });
-      }
-
-      const raw = await readBody(req);
-
-      let body: unknown;
-
-      try {
-        body = JSON.parse(raw);
-      } catch {
-        throw new HttpError(400, "Invalid JSON payload");
-      }
-
-      const reference =
-        typeof body === "object" && body !== null
-          ? (body as Record<string, unknown>).reference
-          : undefined;
-
-      return json(
-        res,
-        200,
-        await initializePayment(reference),
-      );
-    }
-
-    if (
-      req.method === "GET" &&
-      url.pathname.startsWith("/api/payments/")
-    ) {
-      if (!limiters.verify.allow(key)) {
-        return json(res, 429, {
-          message: "Too many requests",
-        });
-      }
-
-      const reference = decodeURIComponent(
-        url.pathname.slice("/api/payments/".length),
-      );
-
-      return json(
-        res,
-        200,
-        await verifyPayment(reference),
-      );
-    }
-
-    return json(res, 404, {
-      message: "Not found",
-    });
-  } catch (error) {
-    if (error instanceof HttpError) {
-      return json(res, error.status, {
-        message: error.message,
-      });
-    }
-
-    if (error instanceof SyntaxError) {
-      return json(res, 400, {
-        message: "Invalid JSON payload",
-      });
-    }
-
-    if (
-      error instanceof Error &&
-      /^(Invalid|Only|Contribution amount|Request body)/.test(
-        error.message,
-      )
-    ) {
-      return json(res, 400, {
-        message: error.message,
-      });
-    }
-
-    console.error(error);
-
-    return json(res, 500, {
-      message: "Internal server error",
-    });
+  const request = new Request(url, { method: req.method, headers, body: req.method === "GET" || req.method === "HEAD" ? undefined : req as any, duplex: "half" } as RequestInit & { duplex: "half" });
+  const response = await app(request, env);
+  res.statusCode = response.status;
+  response.headers.forEach((value, key) => res.setHeader(key, value));
+  if (response.body) {
+    const buffer = Buffer.from(await response.arrayBuffer());
+    res.end(buffer);
+  } else {
+    res.end();
   }
 });
 
-server.listen(port, () => {
-  console.log(
-    `Wedding API listening on http://localhost:${port}`,
-  );
-});
+server.listen(port, () => console.log(`Wedding API listening on http://localhost:${port}`));

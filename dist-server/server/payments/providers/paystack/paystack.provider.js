@@ -63,6 +63,6 @@ export class PaystackProvider {
         }
     }
     async handleWebhook(request) {
-        return normalizePaystackWebhook(request.rawBody, request.headers["x-paystack-signature"], this.config.secretKey);
+        return await normalizePaystackWebhook(request.rawBody, request.headers["x-paystack-signature"], this.config.secretKey);
     }
 }

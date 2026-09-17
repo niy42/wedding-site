@@ -2,7 +2,7 @@
 // const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // const MAX_BODY_BYTES = 32 * 1024;
 // export interface ContributionInput { categoryId: string; money: { amountMinor: number; currency: Currency }; supporter: { name: string; email: string; phone?: string; message?: string; isAnonymous?: boolean; isPublic?: boolean }; }
-// export function assertBodySize(rawBody: string) { if (Buffer.byteLength(rawBody, "utf8") > MAX_BODY_BYTES) throw new Error("Request body is too large"); }
+// export function assertBodySize(rawBody: string) { if (new TextEncoder().encode(rawBody).byteLength > MAX_BODY_BYTES) throw new Error("Request body is too large"); }
 // export function parseContributionInput(value: unknown): ContributionInput {
 //   if (!isRecord(value)) throw new Error("Invalid contribution payload"); const money = value.money, supporter = value.supporter;
 //   if (!isRecord(money) || !isRecord(supporter)) throw new Error("Invalid contribution payload");
@@ -43,7 +43,7 @@ export interface ContributionInput {
 }
 
 export function assertBodySize(rawBody: string): void {
-  if (Buffer.byteLength(rawBody, "utf8") > MAX_BODY_BYTES) {
+  if (new TextEncoder().encode(rawBody).byteLength > MAX_BODY_BYTES) {
     throw new Error("Request body is too large");
   }
 }

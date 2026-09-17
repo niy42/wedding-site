@@ -1,27 +1,21 @@
-import { randomUUID } from "node:crypto";
 import { supabaseRequest } from "../db/database.js";
 import { parseContributionInput, parseReference, } from "../lib/validation.js";
 import { createPaymentProvider, } from "../payments/services/payment-provider.factory.js";
 import { PaymentService, } from "../payments/services/payment.service.js";
-function requiredEnv(name) {
-    const value = process.env[name];
-    if (!value) {
-        throw new Error(`${name} must be set`);
-    }
-    return value;
-}
-const provider = createPaymentProvider({
-    PAYMENT_PROVIDER: (process.env.PAYMENT_PROVIDER ?? "paystack"),
-    PAYSTACK_SECRET_KEY: requiredEnv("PAYSTACK_SECRET_KEY"),
-});
-const paymentService = new PaymentService(provider, createContributionRepository());
 function createReference() {
-    return `gift_${randomUUID().replaceAll("-", "")}`;
+    return `gift_${crypto.randomUUID().replaceAll("-", "")}`;
 }
-function createContributionRepository() {
+function createPaymentService(env) {
+    const provider = createPaymentProvider({
+        PAYMENT_PROVIDER: env.PAYMENT_PROVIDER,
+        PAYSTACK_SECRET_KEY: env.PAYSTACK_SECRET_KEY,
+    });
+    return new PaymentService(provider, createContributionRepository(env));
+}
+function createContributionRepository(env) {
     return {
         async markPaymentCreated(reference, init) {
-            await supabaseRequest("contributions", {
+            await supabaseRequest(env, "contributions", {
                 method: "PATCH",
                 query: {
                     reference: `eq.${reference}`,
@@ -38,7 +32,7 @@ function createContributionRepository() {
             });
         },
         async applyPaymentEvent(event) {
-            await supabaseRequest("rpc/process_payment_event", {
+            await supabaseRequest(env, "rpc/process_payment_event", {
                 method: "POST",
                 body: JSON.stringify({
                     p_provider: event.provider,
@@ -56,9 +50,9 @@ function createContributionRepository() {
         },
     };
 }
-export async function createContribution(body) {
+export async function createContribution(env, body) {
     const input = parseContributionInput(body);
-    const categories = await supabaseRequest("gift_categories", {
+    const categories = await supabaseRequest(env, "gift_categories", {
         method: "GET",
         query: {
             id: `eq.${input.categoryId}`,
@@ -70,9 +64,9 @@ export async function createContribution(body) {
     if (categories.length === 0) {
         throw new HttpError(400, "Invalid gift category");
     }
-    const contributionId = randomUUID();
+    const contributionId = crypto.randomUUID();
     const reference = createReference();
-    await supabaseRequest("contributions", {
+    await supabaseRequest(env, "contributions", {
         method: "POST",
         body: JSON.stringify({
             id: contributionId,
@@ -93,9 +87,9 @@ export async function createContribution(body) {
         reference,
     };
 }
-export async function initializePayment(rawReference) {
+export async function initializePayment(env, rawReference) {
     const reference = parseReference(rawReference);
-    const claimed = await supabaseRequest("rpc/claim_payment_initialization", {
+    const claimed = await supabaseRequest(env, "rpc/claim_payment_initialization", {
         method: "POST",
         body: JSON.stringify({
             p_reference: reference,
@@ -116,6 +110,7 @@ export async function initializePayment(rawReference) {
             provider: "paystack",
         };
     }
+    const paymentService = createPaymentService(env);
     const request = {
         reference: row.reference,
         money: {
@@ -124,7 +119,7 @@ export async function initializePayment(rawReference) {
         },
         customerEmail: row.supporter_email,
         customerName: row.supporter_name,
-        callbackUrl: `${requiredEnv("APP_BASE_URL")}/gift/thank-you`,
+        callbackUrl: `${env.APP_BASE_URL}/gift/thank-you`,
         metadata: {
             contribution_id: row.reference,
             category_id: row.category_id,
@@ -139,7 +134,7 @@ export async function initializePayment(rawReference) {
         };
     }
     catch (error) {
-        await supabaseRequest("contributions", {
+        await supabaseRequest(env, "contributions", {
             method: "PATCH",
             query: {
                 reference: `eq.${reference}`,
@@ -153,9 +148,9 @@ export async function initializePayment(rawReference) {
         throw error;
     }
 }
-export async function verifyPayment(rawReference) {
+export async function verifyPayment(env, rawReference) {
     const reference = parseReference(rawReference);
-    const rows = await supabaseRequest("contributions", {
+    const rows = await supabaseRequest(env, "contributions", {
         method: "GET",
         query: {
             reference: `eq.${reference}`,
@@ -166,7 +161,7 @@ export async function verifyPayment(rawReference) {
     if (rows.length === 0) {
         throw new HttpError(404, "Payment not found");
     }
-    const verification = await paymentService.verify(reference);
+    const verification = await createPaymentService(env).verify(reference);
     const expected = rows[0];
     if (verification.reference !== reference) {
         throw new HttpError(409, "Payment reference could not be verified");
@@ -185,7 +180,7 @@ export async function verifyPayment(rawReference) {
         throw new HttpError(409, "Payment amount or currency could not be verified");
     }
     if (verification.status === "SUCCESSFUL") {
-        await supabaseRequest("contributions", {
+        await supabaseRequest(env, "contributions", {
             method: "PATCH",
             query: {
                 reference: `eq.${reference}`,
@@ -208,8 +203,8 @@ export async function verifyPayment(rawReference) {
         supporterName: rows[0].supporter_name,
     };
 }
-export async function handlePaystackWebhook(rawBody, headers) {
-    return paymentService.processWebhook({
+export async function handlePaystackWebhook(env, rawBody, headers) {
+    return createPaymentService(env).processWebhook({
         rawBody,
         headers,
     });

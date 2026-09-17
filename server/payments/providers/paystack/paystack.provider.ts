@@ -95,7 +95,7 @@ export class PaystackProvider implements PaymentProvider {
   }
 
   async handleWebhook(request: PaymentWebhookRequest): Promise<PaymentWebhookResult> {
-    return normalizePaystackWebhook(
+    return await normalizePaystackWebhook(
       request.rawBody,
       request.headers["x-paystack-signature"],
       this.config.secretKey

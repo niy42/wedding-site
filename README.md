@@ -57,3 +57,23 @@ Admin API endpoints:
 - `GET /api/admin/dashboard`
 
 After adding the new migration, run the Supabase migrations before using RSVP/admin data. The migration also replaces the seeded gift-category Picsum URLs with bundled wedding images.
+
+## Cloudflare deployment
+
+The API is implemented behind a platform-neutral `Request -> Response` application in `server/app.ts`. The existing Node server is now only a local adapter, while `worker/index.ts` is the Cloudflare adapter. This keeps the payment, Supabase, validation, admin-auth, and routing logic shared between local Node development and Cloudflare Workers.
+
+The Worker also serves the Vite `dist` output, so the site and API can be deployed together:
+
+```bash
+npm run deploy
+```
+
+For Cloudflare-local development:
+
+```bash
+cp .dev.vars.example .dev.vars
+npm run build
+npm run worker:dev
+```
+
+Configure the production secrets/variables (`PAYSTACK_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSCODE`, `ADMIN_SESSION_SECRET`, etc.) in Cloudflare. Do not put these values in `VITE_*` variables.
