@@ -1,4 +1,4 @@
-import { ChurchEnvNoColor, Golden, HomeKeff, IntroHome, Proposal, ProposalHands, ProposalHandsLove, ProposalTwo } from "@/assets";
+import { ChurchEnvNoColor, Golden, HomeKeffTwo, IntroHome, Proposal, ProposalHands, ProposalHandsLove, ProposalTwo } from "@/assets";
 import type { GalleryImage, StoryMilestone, WeddingDetails } from "@/types";
 
 
@@ -88,7 +88,7 @@ export const galleryImages: GalleryImage[] = [
 
   {
     id: "gallery-5",
-    src: HomeKeff,
+    src: HomeKeffTwo,
     alt: "Photo 5 of Josephine and Andrew",
     width: 1200,
     height: 1500,

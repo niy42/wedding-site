@@ -11,6 +11,7 @@ import IntroHomeMinna from "@/assets/images/intro-home-minna.jpg";
 import IntroHome from "@/assets/images/intro-home.png";
 import HomeKeffi from "@/assets/images/home-keffi.jpg";
 import HomeKeff from "@/assets/images/home-keff.png";
+import HomeKeffTwo from "@/assets/images/home-kefftwo.png";
 import Proposal from "@/assets/images/proposal.jpg";
 import ProposalTwo from "@/assets/images/proposal2.jpg";
 import ProposalHands from "@/assets/images/proposal-hands.jpg";
@@ -19,7 +20,7 @@ import ProposalFlowers from "@/assets/images/proposal-flowers.jpg";
 import Celeb from "@/assets/images/celebration.jpg";
 import House from "@/assets/images/house.jpg";
 import Outfit from "@/assets/images/outfit.jpg";
-import Blessings from "@/assets/images/blessings.png";
+import Blessings from "@/assets/images/blessings.jpg";
 
 export {
   heroImage,
@@ -35,6 +36,7 @@ export {
   IntroHome,
   HomeKeffi,
   HomeKeff,
+  HomeKeffTwo,
   Proposal,
   ProposalTwo,
   ProposalHands,

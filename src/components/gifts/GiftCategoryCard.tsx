@@ -1,6 +1,7 @@
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { formatMoney, progressPercent } from "@/lib/currency";
 import type { GiftCategory } from "@/types";
+import { ArrowRight } from "lucide-react";
 
 interface GiftCategoryCardProps {
   category: GiftCategory;
@@ -42,8 +43,13 @@ export function GiftCategoryCard({ category, onSelect }: GiftCategoryCardProps) 
           )}
         </div>
 
-        <span className="mt-6 group-hover:text-accent text-xs uppercase tracking-[0.18em] transition-colors text-accent-soft">
-          Give to this →
+        <span className="inline-flex items-center gap-2 mt-6 group-hover:text-accent text-xs uppercase tracking-[0.18em] transition-colors text-accent-soft">
+          Give to this
+          <ArrowRight
+            size={15}
+            strokeWidth={1.5}
+            className="transition-transform group-hover:translate-x-1 duration-300"
+          />
         </span>
       </div>
     </button>
