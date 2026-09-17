@@ -21,6 +21,7 @@ import Celeb from "@/assets/images/celebration.jpg";
 import House from "@/assets/images/house.jpg";
 import Outfit from "@/assets/images/outfit.jpg";
 import Blessings from "@/assets/images/blessings.jpg";
+import IkomDress from "@/assets/images/Ikom-dress.jpg"
 
 export {
   heroImage,
@@ -46,4 +47,5 @@ export {
   House,
   Outfit,
   Blessings,
+  IkomDress,
 }

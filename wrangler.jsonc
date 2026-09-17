@@ -7,13 +7,64 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*", "/health"]
+    "run_worker_first": [
+      "/api/*",
+      "/health"
+    ]
   },
   "ratelimits": [
-    { "name": "CONTRIBUTION_RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 10, "period": 60 } },
-    { "name": "RSVP_RATE_LIMITER", "namespace_id": "1002", "simple": { "limit": 10, "period": 60 } },
-    { "name": "INITIALIZE_RATE_LIMITER", "namespace_id": "1003", "simple": { "limit": 10, "period": 60 } },
-    { "name": "VERIFY_RATE_LIMITER", "namespace_id": "1004", "simple": { "limit": 30, "period": 60 } },
-    { "name": "EXCHANGE_RATES_RATE_LIMITER", "namespace_id": "1005", "simple": { "limit": 20, "period": 60 } }
-  ]
+    {
+      "name": "CONTRIBUTION_RATE_LIMITER",
+      "namespace_id": "1001",
+      "simple": {
+        "limit": 10,
+        "period": 60
+      }
+    },
+    {
+      "name": "RSVP_RATE_LIMITER",
+      "namespace_id": "1002",
+      "simple": {
+        "limit": 10,
+        "period": 60
+      }
+    },
+    {
+      "name": "INITIALIZE_RATE_LIMITER",
+      "namespace_id": "1003",
+      "simple": {
+        "limit": 10,
+        "period": 60
+      }
+    },
+    {
+      "name": "VERIFY_RATE_LIMITER",
+      "namespace_id": "1004",
+      "simple": {
+        "limit": 30,
+        "period": 60
+      }
+    },
+    {
+      "name": "EXCHANGE_RATES_RATE_LIMITER",
+      "namespace_id": "1005",
+      "simple": {
+        "limit": 20,
+        "period": 60
+      }
+    }
+  ],
+  // "d1_databases": [
+  //   {
+  //     "binding": "DB",
+  //     "database_name": "wedding",
+  //     "database_id": "d1-wedding"
+  //   }
+  // ],
+  "vars": {
+    "SUPABASE_URL": "https://gnefjgkaqzqysmzfgorf.supabase.co",
+    "PAYSTACK_BASE_URL": "https://api.paystack.co",
+    "NODE_ENV": "production",
+    "PAYMENT_PROVIDER": "paystack"
+  }
 }

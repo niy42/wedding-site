@@ -110,7 +110,7 @@ export function AdminPage() {
             <h1 className="font-display text-3xl">Admin</h1>
             <p className="mt-2 text-fg-muted text-sm">Live wedding and contribution data.</p>
           </div>
-          <Button type="button" variant="secondary" onClick={handleLogout}>Sign out</Button>
+          <Button type="button" variant="secondary" size="xs" className="w-20 sm:w-24 h-8 cursor-pointer" onClick={handleLogout}>Sign out</Button>
         </div>
 
         {error && <p className="mt-6 text-rose text-sm" role="alert">{error}</p>}

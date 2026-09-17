@@ -15,7 +15,7 @@ export function GiftCategoryCard({ category, onSelect }: GiftCategoryCardProps) 
     <button
       type="button"
       onClick={() => onSelect(category)}
-      className="group flex flex-col items-start border border-border-subtle hover:border-accent/40 overflow-hidden text-left transition-colors"
+      className="group flex flex-col items-start border border-border-subtle hover:border-accent/40 overflow-hidden text-left transition-colors cursor-pointer"
     >
       <div className="w-full overflow-hidden">
         <img

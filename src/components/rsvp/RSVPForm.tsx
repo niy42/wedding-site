@@ -67,7 +67,7 @@ export function RSVPForm() {
 
   return (
     <Section id="rsvp" tone="elevated">
-      <Container className="grid gap-12 sm:grid-cols-[0.85fr_1.15fr] sm:items-start">
+      <Container className="sm:items-start gap-12 grid sm:grid-cols-[0.85fr_1.15fr]">
         <div>
           <span className="eyebrow">RSVP</span>
           <Heading level="h2" as="p" className="mt-4">
@@ -81,7 +81,7 @@ export function RSVPForm() {
 
         <Card>
           <form onSubmit={handleSubmit} className="flex flex-col gap-6" noValidate>
-            <div className="grid gap-6 sm:grid-cols-2">
+            <div className="gap-6 grid sm:grid-cols-2">
               <Input
                 label="Full name"
                 required
@@ -110,14 +110,14 @@ export function RSVPForm() {
             />
 
             <fieldset className="flex flex-col gap-2.5">
-              <legend className="text-[0.7rem] font-medium uppercase tracking-[0.15em] text-fg-muted">
+              <legend className="font-medium text-[0.7rem] text-fg-muted uppercase tracking-[0.15em]">
                 Will you be attending?
               </legend>
               <div className="flex gap-3">
                 {(["yes", "no"] as const).map((option) => (
                   <label
                     key={option}
-                    className="flex flex-1 cursor-pointer items-center justify-center gap-2 border border-border px-4 py-3 text-sm text-fg-muted transition-colors has-[:checked]:border-accent has-[:checked]:text-accent-soft"
+                    className="flex flex-1 justify-center items-center gap-2 px-4 py-3 border border-border has-checked:border-accent text-fg-muted text-sm transition-colors has-checked:text-accent-soft cursor-pointer"
                   >
                     <input
                       type="radio"
@@ -125,7 +125,7 @@ export function RSVPForm() {
                       value={option}
                       checked={values.attending === option}
                       onChange={() => update("attending", option)}
-                      className="accent-[var(--color-accent)]"
+                      className="accent-accent"
                     />
                     {option === "yes" ? "Joyfully accept" : "Regretfully decline"}
                   </label>
@@ -160,12 +160,12 @@ export function RSVPForm() {
             />
 
             {state.status === "error" && (
-              <p role="alert" className="text-sm text-rose">
+              <p role="alert" className="text-rose text-sm">
                 {state.message}
               </p>
             )}
 
-            <Button type="submit" size="lg" disabled={state.status === "submitting"}>
+            <Button type="submit" size="lg" className="cursor-pointer" disabled={state.status === "submitting"}>
               {state.status === "submitting" ? "Sending…" : "Send RSVP"}
             </Button>
           </form>
