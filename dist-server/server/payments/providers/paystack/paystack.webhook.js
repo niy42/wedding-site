@@ -22,7 +22,19 @@ function isEvent(v) {
     if (typeof v !== "object" || v === null)
         return false;
     const x = v, d = x.data;
-    return typeof x.event === "string" && typeof d === "object" && d !== null && typeof d.reference === "string" && Number.isSafeInteger(d.id) && typeof d.status === "string" && Number.isSafeInteger(d.amount) && typeof d.currency === "string";
+    const requestedAmountValid = d.requested_amount == null ||
+        ((typeof d.requested_amount === "number" || typeof d.requested_amount === "string") &&
+            Number.isSafeInteger(Number(d.requested_amount)) &&
+            Number(d.requested_amount) >= 0);
+    return typeof x.event === "string" &&
+        typeof d === "object" &&
+        d !== null &&
+        typeof d.reference === "string" &&
+        Number.isSafeInteger(d.id) &&
+        typeof d.status === "string" &&
+        Number.isSafeInteger(d.amount) &&
+        typeof d.currency === "string" &&
+        requestedAmountValid;
 }
 export function normalizePaystackWebhook(rawBody, signature, secret) {
     if (!verifyPaystackSignature(rawBody, signature, secret))
@@ -32,5 +44,8 @@ export function normalizePaystackWebhook(rawBody, signature, secret) {
         return { valid: true, reason: `Ignored event type: ${body.event}` };
     if (body.data.status !== "success")
         return { valid: true, reason: `Ignored charge status: ${body.data.status}` };
-    return { valid: true, event: { reference: body.data.reference, providerReference: String(body.data.id), provider: "paystack", status: "SUCCESSFUL", money: { amountMinor: body.data.amount, currency: body.data.currency }, occurredAt: body.data.paid_at ?? new Date().toISOString(), idempotencyKey: `paystack:${body.data.id}`, rawPayload: body } };
+    return { valid: true, event: { reference: body.data.reference, providerReference: String(body.data.id), provider: "paystack", status: "SUCCESSFUL", money: {
+                amountMinor: Number(body.data.requested_amount ?? body.data.amount),
+                currency: body.data.currency,
+            }, occurredAt: body.data.paid_at ?? new Date().toISOString(), idempotencyKey: `paystack:${body.data.id}`, rawPayload: body } };
 }

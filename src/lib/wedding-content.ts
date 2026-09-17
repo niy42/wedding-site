@@ -1,4 +1,4 @@
-import { ChurchEnvNoColor, Golden, IntroHome, Proposal, ProposalHands, ProposalHandsLove, ProposalTwo } from "@/assets";
+import { ChurchEnvNoColor, Golden, HomeKeff, IntroHome, Proposal, ProposalHands, ProposalHandsLove, ProposalTwo } from "@/assets";
 import type { GalleryImage, StoryMilestone, WeddingDetails } from "@/types";
 
 
@@ -11,12 +11,13 @@ export const THEME_ID = "JossyAndrew2026";
 export const weddingDetails: WeddingDetails = {
   partnerOneName: "Josephine",
   partnerTwoName: "Andrew",
-  weddingDateISO: "2027-03-20T10:00:00+01:00",
+  weddingDateISO: "2027-05-08T10:00:00+01:00",
   dressCode: "Black tie — deep jewel tones and aso-oke warmly welcomed",
 
   venue: {
-    name: "Lion's Gate Hotel",
-    address: "Along Kaduna Road, Keffi, Nasarawa State",
+    name: "The Redeemed Christian Church of God (RCCG ERP)",
+    address: "Area Command Keffi, Nasarawa State",
+    mapUrl: "https://maps.google.com",
   },
 
   ceremony: {
@@ -84,6 +85,15 @@ export const galleryImages: GalleryImage[] = [
     width: 1200,
     height: 1500,
   },
+
+  {
+    id: "gallery-5",
+    src: HomeKeff,
+    alt: "Photo 5 of Josephine and Andrew",
+    width: 1200,
+    height: 1500,
+  },
+
 ];
 
 export const suggestedAmountsMajor: Record<string, number[]> = {

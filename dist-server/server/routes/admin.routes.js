@@ -41,7 +41,6 @@ export async function getAdminDashboard(req) {
     const categoryMap = new Map(categories.map((category) => [category.id, category]));
     const successful = contributions.filter((item) => item.payment_status === "SUCCESSFUL");
     const totalMinor = successful.reduce((sum, item) => sum + Number(item.amount_minor), 0);
-    const contributorEmails = new Set(successful.map((item) => item.supporter_email.toLowerCase()));
     const mappedCategories = categories.map((category) => ({
         id: category.id,
         title: category.title,
@@ -59,7 +58,9 @@ export async function getAdminDashboard(req) {
     }));
     return {
         totals: { amountMinor: totalMinor, currency: "NGN" },
-        contributorCount: contributorEmails.size,
+        // Counts successful contribution records, not unique email addresses.
+        // One supporter may legitimately make multiple contributions.
+        contributorCount: successful.length,
         rsvpCount: rsvps.length,
         attendingGuestCount: rsvps
             .filter((rsvp) => rsvp.attending === "yes")

@@ -170,9 +170,9 @@ GRANT EXECUTE ON FUNCTION process_payment_event(TEXT, TEXT, TEXT, TEXT, TEXT, TE
 
 INSERT INTO gift_categories (id, title, description, image_url, target_amount_minor, currency)
 VALUES
-  ('celebration', 'The Celebration', 'Help us bring the wedding day itself to life — flowers, music, and the little details that make it unforgettable.', '/images/gifts/celebration.jpg', 30000000, 'NGN'),
-  ('honeymoon', 'The Honeymoon', 'Our first trip as a married couple — every gift here goes straight toward the adventure.', '/images/gifts/honeymoon.jpg', 50000000, 'NGN'),
-  ('new-home', 'Our New Home', 'Setting up the place we''ll build our life together, one room at a time.', '/images/gifts/new-home.jpg', 40000000, 'NGN'),
+  ('celebration', 'The Celebration', 'Help us bring the wedding day itself to life — flowers, music, and the little details that make it unforgettable.', '/images/gifts/celebration.jpg', 200000000, 'NGN'),
+  ('couple-attire', 'The Couple''s Attire', 'Help us prepare the outfits and finishing touches we''ll wear on our special day.', '/images/gifts/couple-attire.jpg', 100000000, 'NGN'),
+  ('new-home', 'Our New Home', 'Setting up the place we''ll build our life together, one room at a time.', '/images/gifts/new-home.jpg', 300000000, 'NGN'),
   ('blessing', 'A General Blessing', 'No specific goal — just a gift from your heart to celebrate our new chapter, however you''d like to bless it.', '/images/gifts/blessing.jpg', NULL, 'NGN')
 ON CONFLICT (id) DO UPDATE SET
   title = EXCLUDED.title,

@@ -25,9 +25,27 @@ export function mapPaystackStatus(paystackStatus: string): PaymentStatus {
   }
 }
 
-/** Paystack amounts are always in the currency's minor unit already. */
-export function paystackAmountToMoney(amountMinor: number, currency: string): Money {
-  return { amountMinor, currency: currency as Currency };
+/**
+ * Paystack returns amounts in the currency's minor unit. `requested_amount`
+ * is the amount originally requested from the merchant's application. When
+ * customer-paid fees are enabled, Paystack's `amount` can be higher because
+ * it includes the fee charged to the customer, while `requested_amount`
+ * remains the contribution amount we need to verify against our database.
+ */
+export function paystackAmountToMoney(
+  amountMinor: number | string,
+  currency: string,
+): Money {
+  const normalizedAmount = Number(amountMinor);
+
+  if (!Number.isSafeInteger(normalizedAmount) || normalizedAmount < 0) {
+    throw new Error("Paystack returned an invalid transaction amount");
+  }
+
+  return {
+    amountMinor: normalizedAmount,
+    currency: currency as Currency,
+  };
 }
 
 export function moneyToPaystackAmount(money: Money): number {

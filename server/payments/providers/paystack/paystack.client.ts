@@ -31,6 +31,7 @@ interface PaystackVerifyResponse {
     paid_at: string | null;
     id: number;
     metadata: unknown;
+    requested_amount?: number | string | null;
   };
 }
 

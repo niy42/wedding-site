@@ -1,5 +1,5 @@
 import { Container } from "@/components/ui/Container";
-import { heroImage } from "@/assets";
+import { TradHeroImage } from "@/assets";
 import { Countdown } from "./Countdown";
 import { THEME_ID, weddingDetails } from "@/lib/wedding-content";
 
@@ -13,30 +13,30 @@ export function Hero() {
   });
 
   return (
-    <section id="top" className="relative min-h-100svh overflow-hidden bg-bg text-fg">
+    <section id="top" className="relative bg-bg min-h-100svh overflow-hidden text-fg">
       <img
-        src={heroImage}
+        src={TradHeroImage}
         alt=""
         aria-hidden
-        className="absolute inset-0 h-full w-full object-cover opacity-[0.38] animate-[hero-reveal_1.6s_var(--ease-editorial)_forwards]"
+        className="absolute inset-0 opacity-[0.38] w-full h-full object-cover animate-[hero-reveal_1.6s_var(--ease-editorial)_forwards]"
         loading="eager"
       />
       {/* Deep tonal overlay — cinematic, not a flat scrim */}
       <div className="absolute inset-0 bg-linear-to-t from-bg via-bg/60 to-bg/30" />
       <div className="absolute inset-0 bg-linear-to-b from-bg/50 via-transparent to-transparent" />
 
-      <Container className="relative flex min-h-svh flex-col justify-end gap-10 pb-14 pt-24 sm:gap-12 sm:pb-20 sm:pt-28">
+      <Container className="relative flex flex-col justify-end gap-10 sm:gap-12 pt-24 sm:pt-28 pb-14 sm:pb-20 min-h-svh">
         <div>
-          <p className="eyebrow opacity-0 animate-[fade-up_0.9s_var(--ease-editorial)_0.3s_forwards]">
+          <p className="opacity-0 animate-[fade-up_0.9s_var(--ease-editorial)_0.3s_forwards] eyebrow">
             {THEME_ID}
           </p>
-          <h1 className="mt-5 font-display text-7xl leading-[0.95] text-balance opacity-0 sm:text-[8.5rem] animate-[fade-up_1s_var(--ease-editorial)_0.5s_forwards]">
+          <h1 className="opacity-0 mt-5 font-display sm:text-[8.5rem] text-7xl text-balance leading-[0.95] animate-[fade-up_1s_var(--ease-editorial)_0.5s_forwards]">
             {weddingDetails.partnerOneName}
             <span className="italic text-accent-soft"> &amp; </span>
             <br className="hidden sm:block" />
             {weddingDetails.partnerTwoName}
           </h1>
-          <p className="mt-6 max-w-md text-base text-fg-muted opacity-0 animate-[fade-up_0.9s_var(--ease-editorial)_0.8s_forwards] sm:text-lg">
+          <p className="opacity-0 mt-6 max-w-md text-fg-muted text-base sm:text-lg animate-[fade-up_0.9s_var(--ease-editorial)_0.8s_forwards]">
             {formatted}
           </p>
         </div>
@@ -45,16 +45,16 @@ export function Hero() {
           <Countdown targetISO={weddingDetails.weddingDateISO} />
         </div>
 
-        <div className="flex flex-col gap-4 opacity-0 animate-[fade-up_0.9s_var(--ease-editorial)_1.3s_forwards] sm:flex-row">
+        <div className="flex sm:flex-row flex-col gap-4 opacity-0 animate-[fade-up_0.9s_var(--ease-editorial)_1.3s_forwards]">
           <a
             href="#rsvp"
-            className="inline-flex items-center justify-center bg-accent px-9 py-4 text-xs uppercase tracking-[0.2em] text-bg transition-colors hover:bg-accent-soft"
+            className="inline-flex justify-center items-center bg-accent px-9 py-4 text-bg text-xs uppercase tracking-[0.2em] transition-colors hover:bg-accent-soft"
           >
             RSVP
           </a>
           <a
             href="#gift"
-            className="inline-flex items-center justify-center border border-fg/25 px-9 py-4 text-xs uppercase tracking-[0.2em] text-fg transition-colors hover:border-accent hover:text-accent-soft"
+            className="inline-flex justify-center items-center px-9 py-4 border border-fg/25 hover:border-accent text-fg text-xs uppercase tracking-[0.2em] transition-colors hover:text-accent-soft"
           >
             Send a Gift
           </a>

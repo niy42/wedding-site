@@ -8,7 +8,19 @@ export function verifyPaystackSignature(rawBody:string, signatureHeader:string|u
  return expected.length===actual.length&&timingSafeEqual(expected,actual);
 }
 
-interface PaystackWebhookEvent { event:string; data:{ reference:string; id:number; status:string; amount:number; currency:string; paid_at:string|null; metadata?:unknown } }
+interface PaystackWebhookEvent {
+  event:string;
+  data:{
+    reference:string;
+    id:number;
+    status:string;
+    amount:number;
+    requested_amount?: number | string | null;
+    currency:string;
+    paid_at:string|null;
+    metadata?:unknown;
+  }
+}
 export function parsePaystackWebhookBody(rawBody:string):PaystackWebhookEvent{
  let value:unknown; try{value=JSON.parse(rawBody)}catch{throw new Error("Malformed webhook JSON")}
  if(!isEvent(value)) throw new Error("Malformed Paystack webhook payload");
@@ -16,7 +28,21 @@ export function parsePaystackWebhookBody(rawBody:string):PaystackWebhookEvent{
 }
 function isEvent(v:unknown):v is PaystackWebhookEvent{
  if(typeof v!=="object"||v===null)return false; const x=v as any, d=x.data;
- return typeof x.event==="string"&&typeof d==="object"&&d!==null&&typeof d.reference==="string"&&Number.isSafeInteger(d.id)&&typeof d.status==="string"&&Number.isSafeInteger(d.amount)&&typeof d.currency==="string";
+ const requestedAmountValid =
+   d.requested_amount == null ||
+   ((typeof d.requested_amount === "number" || typeof d.requested_amount === "string") &&
+     Number.isSafeInteger(Number(d.requested_amount)) &&
+     Number(d.requested_amount) >= 0);
+
+ return typeof x.event==="string"&&
+   typeof d==="object"&&
+   d!==null&&
+   typeof d.reference==="string"&&
+   Number.isSafeInteger(d.id)&&
+   typeof d.status==="string"&&
+   Number.isSafeInteger(d.amount)&&
+   typeof d.currency==="string"&&
+   requestedAmountValid;
 }
 
 export function normalizePaystackWebhook(rawBody:string,signature:string|undefined,secret:string):PaymentWebhookResult{
@@ -24,5 +50,8 @@ export function normalizePaystackWebhook(rawBody:string,signature:string|undefin
  const body=parsePaystackWebhookBody(rawBody);
  if(body.event!=="charge.success") return {valid:true,reason:`Ignored event type: ${body.event}`};
  if(body.data.status!=="success") return {valid:true,reason:`Ignored charge status: ${body.data.status}`};
- return {valid:true,event:{reference:body.data.reference,providerReference:String(body.data.id),provider:"paystack",status:"SUCCESSFUL",money:{amountMinor:body.data.amount,currency:body.data.currency as any},occurredAt:body.data.paid_at??new Date().toISOString(),idempotencyKey:`paystack:${body.data.id}`,rawPayload:body}};
+ return {valid:true,event:{reference:body.data.reference,providerReference:String(body.data.id),provider:"paystack",status:"SUCCESSFUL",money:{
+      amountMinor: Number(body.data.requested_amount ?? body.data.amount),
+      currency:body.data.currency as any,
+    },occurredAt:body.data.paid_at??new Date().toISOString(),idempotencyKey:`paystack:${body.data.id}`,rawPayload:body}};
 }

@@ -53,7 +53,7 @@ export class PaystackProvider {
                 providerReference: String(data.id),
                 provider: this.id,
                 status: mapPaystackStatus(data.status),
-                money: paystackAmountToMoney(data.amount, data.currency),
+                money: paystackAmountToMoney(data.requested_amount ?? data.amount, data.currency),
                 paidAt: data.paid_at ?? undefined,
                 raw: data,
             };

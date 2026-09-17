@@ -250,10 +250,21 @@ export async function verifyPayment(
     );
   }
 
+  const expectedAmountMinor = Number(expected.amount_minor);
+  const actualAmountMinor = verification.money.amountMinor;
+
   if (
-    verification.money.amountMinor !== Number(expected.amount_minor) ||
+    actualAmountMinor !== expectedAmountMinor ||
     verification.money.currency !== expected.currency
   ) {
+    console.error("Payment verification mismatch", {
+      reference,
+      expectedAmountMinor,
+      expectedCurrency: expected.currency,
+      actualAmountMinor,
+      actualCurrency: verification.money.currency,
+    });
+
     throw new HttpError(
       409,
       "Payment amount or currency could not be verified",
